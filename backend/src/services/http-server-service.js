@@ -1,7 +1,6 @@
+import { log } from "console";
 import express from "express";
-import dotenv from "dotenv"
-
-
+import fs from "fs";
 
 export default class HttpServer {
     httpServer;
@@ -11,13 +10,41 @@ export default class HttpServer {
         this.httpServer = express();
 
         //TODO configure http server with routes
-    }
+
+    };
+
+    findAllControllers() {
+        const controllerFiles = [];
+        const controllerFolder = process.cwd() + "/src/controller"
+
+        function findControllerFiles(currentDirectory) {
+            fs.readdirSync(currentDirectory, { withFileTypes: true }).forEach((currentFile) => {
+                console.log("Controlller file: ", currentFile);
+
+                if (currentFile.isDirectory()) {
+                    findControllerFiles(currentDirectory + "/" + currentFile.name)
+                    return
+                }
+
+                controllerFiles.push(currentDirectory + "/" + currentFile.name);
+            })
+        }
+        findControllerFiles(controllerFolder)
+        return controllerFiles
+    };
 
     configureHttpServer() {
-        const controllers = findAllControllers()
+        const controllers = this.findAllControllers();
+        console.log("controllers -->", controllers);
 
-        controllers.forEach((controller) => {
-            this.httpServer.use()
+        controllers.forEach(async (controller) => {
+            const controllerClass = await import(controller)
+            console.log("Ctrl-->", controller);
+            console.log("Val-->", controller, controllerClass);
+            console.log("<----------------------------------->");
+
+
+            //this.httpServer.use(generateUrlFromController(controller), controller)
         })
     };
 
