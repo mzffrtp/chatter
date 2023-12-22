@@ -1,0 +1,24 @@
+TASKS:
+--------
+>>> Backend
+
+- user register api
+- user login api
+- websocket connection after login, users not loged in shouldnot hvae connetc to websocket
+- create room for users. 
+    - how many people will be registered to a room? 
+    - if limit reached no more people will be accepted to the room
+- user should list rooms
+- auser actions should be loged in mongodb (joined, left, loged in, loged out)
+- all romms registered in db
+- all messages in db
+
+--- test writing???
+
+-------
+>>> Frontend
+
+- Login and register maxPayloadLength
+- Room list page
+- Chat page
+- User log page
