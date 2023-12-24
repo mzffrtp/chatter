@@ -1,4 +1,3 @@
-import { log } from "console";
 import express from "express";
 import fs from "fs";
 
@@ -13,43 +12,47 @@ export default class HttpServer {
 
     };
 
-    findAllControllers() {
+    findAllControllerFiles() {
         const controllerFiles = [];
-        const controllerFolder = process.cwd() + "/src/controller"
+        const controllerFolder = process.cwd() + "/src/controllers"
 
         function findControllerFiles(currentDirectory) {
-            fs.readdirSync(currentDirectory, { withFileTypes: true }).forEach((currentFile) => {
-                console.log("Controlller file: ", currentFile);
+            fs.readdirSync(currentDirectory, { withFileTypes: true }).forEach(
+                (currentFile) => {
+                    console.log("Controlller file: ", currentFile);
 
-                if (currentFile.isDirectory()) {
-                    findControllerFiles(currentDirectory + "/" + currentFile.name)
-                    return
-                }
+                    if (currentFile.isDirectory()) {
+                        findControllerFiles(currentDirectory + "/" + currentFile.name)
+                        return;
+                    }
 
-                controllerFiles.push(currentDirectory + "/" + currentFile.name);
-            })
+                    controllerFiles.push(currentDirectory + "/" + currentFile.name);
+                });
         }
         findControllerFiles(controllerFolder)
         return controllerFiles
     };
 
-    configureHttpServer() {
-        const controllers = this.findAllControllers();
-        console.log("controllers -->", controllers);
+    async configureHttpServer() {
+        const controllerFiles = this.findAllControllerFiles();
+        console.log("controllers -->", controllerFiles);
 
-        controllers.forEach(async (controller) => {
-            const controllerClass = await import(controller)
-            console.log("Ctrl-->", controller);
-            console.log("Val-->", controller, controllerClass);
+        for (let i = 0; i < controllerFiles.lenght; i++) {
+            const controllerFile = controllerFiles[i]
+
+            const controllerClass = await import(controllerFile)
             console.log("<----------------------------------->");
+            console.log("Ctrl-->", controllerFile);
+            console.log("Val-->", controllerClass.default);
+            console.log("<----------------------------------->");
+        }
 
-
-            //this.httpServer.use(generateUrlFromController(controller), controller)
-        })
     };
 
     async start() {
         console.log("Http server startting");
+        this.configureHttpServer();
+
 
         this.httpServer.use("/", (req, res, next) => {
             res.status(200).json({

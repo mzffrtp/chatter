@@ -4,6 +4,6 @@ export default class RoomController {
     };
 
     registerRoutes(httpServer) {
-        console.log("");
+        console.log("RoomController::registerRoutes () function invoked");
     }
 }

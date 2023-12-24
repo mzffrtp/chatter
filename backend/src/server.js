@@ -48,7 +48,7 @@ export const bufferToString = (buffer, encoding = "ascii") => {
                 },
                 close: (ws, code, message) => {
                     console.log(
-                        "WebSocket connection closed, IP: " + bufferToString(ws.getRemoteAddressAsText()));
+                        "WebSocket connection closed ");
                 },
             })
             .any("/*", (res, req) => {
@@ -67,13 +67,14 @@ export const bufferToString = (buffer, encoding = "ascii") => {
     }
 })()
 
+
 //todo--> server self
-const server = express();
-server.use(morgan("dev"));
-server.use((req, res, next) => {
-    req.requestTime = new Date().toDateString();
-    next();
-})
+//const server = express();
+//server.use(morgan("dev"));
+//server.use((req, res, next) => {
+//   req.requestTime = new Date().toDateString();
+//    next();
+//})
 
 
 
