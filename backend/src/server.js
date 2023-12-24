@@ -24,6 +24,11 @@ export const bufferToString = (buffer, encoding = "ascii") => {
 
         const httpServerService = new HttpServer();
         await httpServerService.start();
+        httpServerService.use(morgan("dev"))
+        httpServerService.use((req, res, next) => {
+            req.reqtime = new Date().toDateString();
+            next();
+        })
 
         const websockerServer = uWS.App()
 
@@ -68,13 +73,6 @@ export const bufferToString = (buffer, encoding = "ascii") => {
 })()
 
 
-//todo--> server self
-//const server = express();
-//server.use(morgan("dev"));
-//server.use((req, res, next) => {
-//   req.requestTime = new Date().toDateString();
-//    next();
-//})
 
 
 

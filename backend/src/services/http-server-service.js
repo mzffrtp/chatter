@@ -8,8 +8,6 @@ export default class HttpServer {
         console.log("Http server instance created");
         this.httpServer = express();
 
-        //TODO configure http server with routes
-
     };
 
     findAllControllerFiles() {
@@ -19,7 +17,6 @@ export default class HttpServer {
         function findControllerFiles(currentDirectory) {
             fs.readdirSync(currentDirectory, { withFileTypes: true }).forEach(
                 (currentFile) => {
-                    console.log("Controlller file: ", currentFile);
 
                     if (currentFile.isDirectory()) {
                         findControllerFiles(currentDirectory + "/" + currentFile.name)
@@ -34,32 +31,34 @@ export default class HttpServer {
     };
 
     async configureHttpServer() {
-        const controllerFiles = this.findAllControllerFiles();
-        console.log("controllers -->", controllerFiles);
 
-        for (let i = 0; i < controllerFiles.lenght; i++) {
-            const controllerFile = controllerFiles[i]
+        const controllerFiles = this.findAllControllerFiles();
+        console.log("controllers-->", controllerFiles);
+
+        for (let i = 0; i < controllerFiles.length; i++) {
+            const controllerFile = controllerFiles[i];
 
             const controllerClass = await import(controllerFile)
             console.log("<----------------------------------->");
-            console.log("Ctrl-->", controllerFile);
-            console.log("Val-->", controllerClass.default);
+            console.log("controller-->", controllerFile);
+            console.log("val-->", controllerClass.default);
             console.log("<----------------------------------->");
-        }
 
+            try {
+                const obj = new controllerClass.default();
+                await obj.registerRoutes(this.httpServer);
+
+            } catch (e) {
+                console.log("this file excluding:", controllerFile);
+
+            }
+        }
     };
 
     async start() {
         console.log("Http server startting");
-        this.configureHttpServer();
 
-
-        this.httpServer.use("/", (req, res, next) => {
-            res.status(200).json({
-                foo: "foo",
-                bar: "bar"
-            })
-        });
+        await this.configureHttpServer();
 
         this.httpServer.listen(parseInt(
             process.env.HTTP_SERVER_PORT),
