@@ -2,11 +2,13 @@ import express from "express";
 import fs from "fs";
 
 export default class HttpServer {
-    httpServer;
+    httpServer = null
+    services = null
 
-    constructor() {
+    constructor(services) {
         console.log("Http server instance created");
         this.httpServer = express();
+        this.services = services
 
     };
 
@@ -45,7 +47,7 @@ export default class HttpServer {
             console.log("<----------------------------------->");
 
             try {
-                const obj = new controllerClass.default();
+                const obj = new controllerClass.default(this.services);
                 await obj.registerRoutes(this.httpServer);
 
             } catch (e) {
