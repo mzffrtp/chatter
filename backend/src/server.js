@@ -3,6 +3,7 @@ import morgan from "morgan";
 import mongoose from "mongoose";
 import HttpServer from "./services/server/http-server-service.js";
 import WebsocketServer from "./services/server/websocket-server-service.js";
+import NodeCache from "node-cache";
 
 
 dotenv.config({
@@ -16,11 +17,11 @@ export const bufferToString = (buffer, encoding = "ascii") => {
 
 (async () => {
     try {
-
         const services = {
             mongoConnection: null,
             httpServerService: null,
-            websocketService: null
+            websocketService: null,
+            cache: new NodeCache(),
         };
 
         const mongoConnection = await mongoose.connect(process.env.MONGODB_CONNECTION)
@@ -41,6 +42,7 @@ export const bufferToString = (buffer, encoding = "ascii") => {
         console.log(); ("An error occured -->", err)
     }
 })()
+
 
 
 

@@ -8,6 +8,7 @@ export default class HttpServer {
     constructor(services) {
         console.log("Http server instance created");
         this.httpServer = express();
+        this.httpServer.use(express.json())
         this.services = services
 
     };

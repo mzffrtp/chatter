@@ -2,57 +2,100 @@ import { User } from "../../models/userModel.js";
 import BaseController from "../base-controller.js";
 import bcrypt from "bcrypt";
 
+
 export default class AuthController extends BaseController {
-
     routes = {
-        "auth/login": this.login.bind(this),
-        "auth/register": this.register.bind(this),
-    }
+        "/auth/login": this.login,
+        "/auth/register": this.register,
+        "/auth/logout": this.logout,
+    };
 
-    async login(req, res) {
+    login(req, res) {
         console.log(">>> Auth controller::login()function invoked.");
 
-        if (!req.body.username && req.body.username.length < 3) {
-            res.json({
-                status: "error",
-                errorMessage: "Please provide username"
+        (async () => {
+            if (!req.body.username && req.body.username.length < 3) {
+                return this.showError(res, "Please provide username")
+            };
+
+            if (!req.body.password && req.body.password.length < 6) {
+                return this.showError(res, "Please provide password with min 6 characters.")
+            };
+
+            const foundUser = await User.findOne({
+                username: req.body.username,
             })
-            return
-        };
 
-        if (!req.body.password && req.body.password.length < 6) {
-            res.json({
-                status: "error",
-                errorMessage: "Please provide password"
+            if (!bcrypt.compareSync(req.body.password + process.env.APP_KEY, foundUser.password)) {
+                return this.showError(
+                    res,
+                    "User not found, please check your credentilas!")
+            }
+
+            req.body.username;
+            req.body.password;
+            let token = null;
+
+            console.log("auth possible-->", req.body);
+
+            if (process.env.AUTH_MECHANISM === "token") {
+                //! create a hash--> send to client --> keep it in cashe
+                const token = crypto.randomUUID();
+
+                console.log("this-->", this);
+                console.log("this.services-->", this.services);
+
+                this.services.cache.set("auth_" + token, foundUser._id, 60 * 60 * 5)
+
+
+            } else if (process.env.AUTH_MECHANISM === "jwt") {
+                //
+            } else {
+                // error management
+            }
+            const jwt = ""
+
+            return res.status(200).json({
+                status: "log in successfull",
+                data: token
             })
-            return
-        };
 
-        const foundUser = await User.findOne({
-            username: req.body.username,
-            password: bcrypt.hashSync(req.body.password + process.env.APP_KEY)
-        })
-
-        if (foundUser === null) {
-            res.json({
-                status: error,
-                errorMessage: "User not found! Please check your credentials."
-            })
-            return
-        }
+        })();
 
 
-        res.json({
-            status: "success",
-            method: "login"
-        })
     };
 
     register(req, res) {
         console.log(">>> Auth controller::register()function invoked.");
-        res.json({
-            status: "success",
-            method: "register"
-        })
+        if (!req.body.username && req.body.username.length < 3) {
+            return this.showError(res, "Please provide username")
+        };
+
+        if (!req.body.password && req.body.password.length < 6) {
+            return this.showError(res, "Please provide password with min 6 characters.")
+        };
+
+        if (!req.body.email && req.body.email.length < 6) {
+            return this.showError(res, "Please provide password with min 6 characters.")
+        };
+
+        (async () => {
+            const hashedPassword = await bcrypt.hash(
+                req.body.password + process.env.APP_KEY, 12
+            )
+            const newUser = await User.create({
+                ...req.body,
+                password: hashedPassword
+            })
+
+            console.log("new User", newUser);
+
+            //TODO create JWT token and send to client
+
+            return res.status(200).json({
+                status: "success",
+                data: newUser
+            })
+        })();
     };
 }

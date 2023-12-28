@@ -7,8 +7,20 @@ export default class BaseController {
         this.services = services
     }
 
+    showError(res, errorMessage) {
+        res.json({
+            status: "error",
+            errorMessage
+        })
+    };
+
+    showSuccess(res, data) {
+        res.json({
+            status: "success",
+            data
+        })
+    };
     registerRoutes(httpServer) {
-        console.log("RoomController::registerRoutes () function invoked");
 
 
         const keys = Object.keys(this.routes)
