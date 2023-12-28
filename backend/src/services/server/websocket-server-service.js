@@ -1,5 +1,5 @@
 import uWS from "uWebSockets.js";
-import { bufferToString } from "../utils.js";
+import { bufferToString } from "../../utils.js";
 
 export default class WebsocketServer {
     services = null;

@@ -1,10 +1,8 @@
 import dotenv from "dotenv";
-import express from "express";
 import morgan from "morgan";
 import mongoose from "mongoose";
-import User from "./models/userModel.js";
-import HttpServer from "./services/http-server-service.js";
-import WebsocketServer from "./services/websocket-server-service.js";
+import HttpServer from "./services/server/http-server-service.js";
+import WebsocketServer from "./services/server/websocket-server-service.js";
 
 
 dotenv.config({

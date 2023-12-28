@@ -35,23 +35,23 @@ export default class HttpServer {
     async configureHttpServer() {
 
         const controllerFiles = this.findAllControllerFiles();
-        console.log("controllers-->", controllerFiles);
+        //console.log("controllers-->", controllerFiles);
 
         for (let i = 0; i < controllerFiles.length; i++) {
             const controllerFile = controllerFiles[i];
 
             const controllerClass = await import(controllerFile)
-            console.log("<----------------------------------->");
-            console.log("controller-->", controllerFile);
-            console.log("val-->", controllerClass.default);
-            console.log("<----------------------------------->");
+            //console.log("<----------------------------------->");
+            //console.log("controller-->", controllerFile);
+            //console.log("val-->", controllerClass.default);
+            //console.log("<----------------------------------->");
 
             try {
                 const obj = new controllerClass.default(this.services);
                 await obj.registerRoutes(this.httpServer);
 
             } catch (e) {
-                console.log("this file excluding:", controllerFile);
+                //console.log("this file excluding:", controllerFile);
 
             }
         }
@@ -62,11 +62,12 @@ export default class HttpServer {
 
         await this.configureHttpServer();
 
-        this.httpServer.listen(parseInt(
-            process.env.HTTP_SERVER_PORT),
+        this.httpServer.listen(
+            parseInt(process.env.HTTP_SERVER_PORT),
             process.env.HTTP_SERVER_HOST,
             () => {
-                console.log(`HTTP Server started at --> http://${process.env.HTTP_SERVER_HOST}:${process.env.HTTP_SERVER_PORT}`);
+                console.log(
+                    `HTTP Server started at --> http://${process.env.HTTP_SERVER_HOST}:${process.env.HTTP_SERVER_PORT}`);
             })
     }
 }

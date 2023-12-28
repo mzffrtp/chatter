@@ -3,9 +3,26 @@ import BaseController from "./base-controller.js";
 export default class RoomController extends BaseController {
 
     routes = {
-        "/room/join": this.joinRoom.bind(this),
-        "/room/create": this.createRoom.bind(this),
+        "/room/joinRoom": this.joinRoom.bind(this),
+        "/room/createRoom": this.createRoom.bind(this),
         "/room/sendMessage": this.sendMessage.bind(this),
+        "/room/deleteRoom": this.deleteRoom.bind(this),
+        "/room/listRoom": this.listRoom.bind(this),
+
+    };
+
+    deleteRoom(req, res) {
+        console.log("RoomController::deleteRoom () function invoked");
+        res.json({
+            status: "success"
+        })
+    };
+
+    listRoom(req, res) {
+        console.log("RoomController::listRoom () function invoked");
+        res.json({
+            status: "success"
+        })
     };
 
     createRoom(req, res) {
