@@ -20,9 +20,24 @@ export default class BaseController {
             data
         })
     };
+
+    checkAuth(req, res) {
+        const token = req.headers.authorization.split(" ")[1];
+
+        if (typeof token === "undefined") {
+            this.showError(res, "No token!");
+            return false
+        }
+        const foundUserId = this.services.cache.get("auth_" + token);
+
+        if (typeof foundUserId === "undefined") {
+            this.showError(res, "Invalid token!");
+            return false;
+        }
+        return true;
+    };
+
     registerRoutes(httpServer) {
-
-
         const keys = Object.keys(this.routes)
         //console.log("keys", keys);
 

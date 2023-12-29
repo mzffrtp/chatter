@@ -4,6 +4,9 @@ import { bufferToString } from "../../utils.js";
 export default class WebsocketServer {
     services = null;
     server = null;
+
+    //! WHICH WS WHICH USER?
+    clients = [];
     constructor(services) {
         this.services = services
         console.log("Websocket server instance created");
@@ -46,7 +49,9 @@ export default class WebsocketServer {
                         bufferToString(ws.getRemoteAddressAsText()),
                         bufferToString(message, "utf-8"));
 
-                    if (message.command === "create_new_room") { }
+                    if (message.command === "auth/login") {
+                        //todo handle here!
+                    }
                     else if (message.command === "join_room") { }
                     else if (message.command === "join_room") { }
 

@@ -12,6 +12,8 @@ export default class RoomController extends BaseController {
     };
 
     deleteRoom(req, res) {
+        if (!this.checkAuth(req, res)) { return; }
+
         console.log("RoomController::deleteRoom () function invoked");
         res.json({
             status: "success"
@@ -26,13 +28,18 @@ export default class RoomController extends BaseController {
     };
 
     createRoom(req, res) {
+        if (!this.checkAuth(req, res)) { return; }
+
         console.log("RoomController::createRoom () function invoked");
-        res.json({
-            status: "success"
+
+        return this.showSuccess(res, {
+            message: "Room created successfully!"
         })
     };
 
     joinRoom(req, res) {
+        if (!this.checkAuth(req, res)) { return; }
+
         console.log(">> RoomController::join() function invoked.");
 
         this.services.websocketService.sendData("default", {
@@ -46,6 +53,7 @@ export default class RoomController extends BaseController {
     };
 
     sendMessage(req, res) {
+        if (!this.checkAuth(req, res)) { return; }
         console.log(">> RoomController::sendMessage() function invoked.");
         console.log("incoming form data, message --->", req.body);
 

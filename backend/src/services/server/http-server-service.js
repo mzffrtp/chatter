@@ -1,5 +1,6 @@
 import express from "express";
 import fs from "fs";
+import cors from "cors";
 
 export default class HttpServer {
     httpServer = null
@@ -7,10 +8,11 @@ export default class HttpServer {
 
     constructor(services) {
         console.log("Http server instance created");
+        this.services = services;
+
         this.httpServer = express();
         this.httpServer.use(express.json())
-        this.services = services
-
+        this.httpServer.use(cors())
     };
 
     findAllControllerFiles() {

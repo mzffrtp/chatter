@@ -95,7 +95,6 @@ export default class AuthController extends BaseController {
     logout(req, res) {
         console.log(">> Incoming auth header:", req.headers.authorization);
         const token = req.headers.authorization.split(" ")[1];
-        console.log("logout token-->", token);
 
         if (typeof token === "undefined") {
             return this.showError(res, "No token!");
