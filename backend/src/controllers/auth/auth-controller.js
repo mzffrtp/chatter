@@ -5,63 +5,57 @@ import bcrypt from "bcrypt";
 
 export default class AuthController extends BaseController {
     routes = {
-        "/auth/login": this.login,
-        "/auth/register": this.register,
-        "/auth/logout": this.logout,
+        "/auth/login": (req, res) => this.login(req, res),
+        "/auth/register": (req, res) => this.register(req, res),
+        "/auth/logout": (req, res) => this.logout(req, res),
     };
 
-    login(req, res) {
+    async login(req, res) {
         console.log(">>> Auth controller::login()function invoked.");
 
-        (async () => {
-            if (!req.body.username && req.body.username.length < 3) {
-                return this.showError(res, "Please provide username")
-            };
+        if (!req.body.username && req.body.username.length < 3) {
+            return this.showError(res, "Please provide username")
+        };
 
-            if (!req.body.password && req.body.password.length < 6) {
-                return this.showError(res, "Please provide password with min 6 characters.")
-            };
+        if (!req.body.password && req.body.password.length < 6) {
+            return this.showError(res, "Please provide password with min 6 characters.")
+        };
 
-            const foundUser = await User.findOne({
-                username: req.body.username,
-            })
+        const foundUser = await User.findOne({
+            username: req.body.username,
+        })
 
-            if (!bcrypt.compareSync(req.body.password + process.env.APP_KEY, foundUser.password)) {
-                return this.showError(
-                    res,
-                    "User not found, please check your credentilas!")
-            }
+        if (!bcrypt.compareSync(req.body.password + process.env.APP_KEY, foundUser.password)) {
+            return this.showError(
+                res,
+                "User not found, please check your credentilas!")
+        }
 
-            req.body.username;
-            req.body.password;
-            let token = null;
+        console.log("auth possible-->", foundUser);
 
-            console.log("auth possible-->", req.body);
-
-            if (process.env.AUTH_MECHANISM === "token") {
-                //! create a hash--> send to client --> keep it in cashe
-                const token = crypto.randomUUID();
-
-                console.log("this-->", this);
-                console.log("this.services-->", this.services);
-
-                this.services.cache.set("auth_" + token, foundUser._id, 60 * 60 * 5)
+        req.body.username;
+        req.body.password;
+        let token = null;
 
 
-            } else if (process.env.AUTH_MECHANISM === "jwt") {
-                //
-            } else {
-                // error management
-            }
-            const jwt = ""
+        //todo fix me!
+        if (process.env.AUTH_MECHANISM === "token") {
+            //! create a hash--> send to client --> keep it in cashe
+            const token = crypto.randomUUID();
+            console.log("token-->", token);
 
-            return res.status(200).json({
-                status: "log in successfull",
+            console.log(this.services.cache.set("auth_" + token, foundUser._id, 60 * 60 * 5))
+
+            return this.showSuccess(res, {
                 data: token
-            })
+            });
 
-        })();
-
+        } else if (process.env.AUTH_MECHANISM === "jwt") {
+            //todo handle here,
+            //todo token = jwt.sign();
+        } else {
+            // error management
+        }
 
     };
 
@@ -92,10 +86,30 @@ export default class AuthController extends BaseController {
 
             //TODO create JWT token and send to client
 
-            return res.status(200).json({
-                status: "success",
-                data: newUser
-            })
+            return this.showSuccess(res, {
+                username: newUser.username,
+            });
         })();
     };
+
+    logout(req, res) {
+        console.log(">> Incoming auth header:", req.headers.authorization);
+        const token = req.headers.authorization.split(" ")[1];
+        console.log("logout token-->", token);
+
+        if (typeof token === "undefined") {
+            return this.showError(res, "No token!");
+        }
+        const foundUserId = this.services.cache.get("auth_" + token);
+
+        if (typeof foundUserId === "undefined") {
+            return this.showError(res, "Invalid token!");
+        }
+
+        console.log(">>>  foundUserId:", foundUserId);
+
+        this.services.cache.del("auth_" + token);
+
+        return this.showSuccess(res, null);
+    }
 }
