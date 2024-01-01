@@ -23,3 +23,4 @@ TASKS:
 - Chat page
 - User log page
 - Lazy Load
+- Context for auth and applayouts
