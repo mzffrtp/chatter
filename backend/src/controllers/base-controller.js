@@ -24,13 +24,13 @@ export default class BaseController {
     checkAuth(req, res) {
         const token = req.headers.authorization.split(" ")[1];
 
-        if (typeof token === "undefined") {
+        if (!token) {
             this.showError(res, "No token!");
             return false
         }
         const foundUserId = this.services.cache.get("auth_" + token);
 
-        if (typeof foundUserId === "undefined") {
+        if (!foundUserId) {
             this.showError(res, "Invalid token!");
             return false;
         }
