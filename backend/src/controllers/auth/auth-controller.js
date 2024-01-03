@@ -47,7 +47,14 @@ export default class AuthController extends BaseController {
             console.log(this.services.cache.set("auth_" + token, foundUser._id, 60 * 60 * 5))
 
             return this.showSuccess(res, {
-                data: token
+                data: token,
+                user: {
+                    username: foundUser.username,
+                    email: foundUser.email,
+                    firstname: foundUser.firstname,
+                    lastname: foundUser.lastname,
+                    gender: foundUser.gender,
+                }
             });
 
         } else if (process.env.AUTH_MECHANISM === "jwt") {

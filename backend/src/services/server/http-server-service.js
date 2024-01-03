@@ -12,7 +12,13 @@ export default class HttpServer {
 
         this.httpServer = express();
         this.httpServer.use(express.json())
-        this.httpServer.use(cors())
+
+        const corsOptions = {
+            origin: '*', // Allow requests from any origin
+            methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
+            credentials: true, // Allow credentials (cookies, authorization headers, etc.)
+        };
+        this.httpServer.use(cors(corsOptions))
     };
 
     findAllControllerFiles() {
