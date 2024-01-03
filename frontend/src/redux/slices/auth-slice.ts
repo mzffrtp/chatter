@@ -54,6 +54,20 @@ export const loginAction = createAsyncThunk(
   }
 );
 
+export const getUserMeInfoAction = createAsyncThunk(
+  "user/me",
+  async (thunkAPI) => {
+    try {
+      const api = chatHttpApi();
+      const response = await api.get("/user/me");
+      return response.data;
+    } catch (error) {
+      console.error("Error during login:", error);
+      throw error;
+    }
+  }
+);
+
 export interface AuthStateType {
   token: string | null;
   requestStatus: AsyncStatus;
@@ -85,10 +99,11 @@ export const authSlice = createSlice({
       state.errorMessage = null;
     });
     builder.addCase(loginAction.fulfilled, (state, action) => {
-      console.log(
-        ">> 🚀 file: index.tsx:69 🚀 action.payload.data",
-        action.payload.data.data
-      );
+      if (action.payload.status === "error") {
+        state.errorMessage = action.payload.errorMessage;
+        state.requestStatus = "fulfilled";
+        return;
+      }
       localStorage.setItem("token", action.payload.data.data);
       state.token = action.payload.data.data;
       state.user = action.payload.data.user;
@@ -107,7 +122,30 @@ export const authSlice = createSlice({
       state.errorMessage = null;
     });
     builder.addCase(registerAction.fulfilled, (state, action) => {
+      state.errorMessage = null;
+
       //
+    });
+    //! get user info action
+    builder.addCase(getUserMeInfoAction.pending, (state, action) => {
+      state.requestStatus = "pending";
+      state.errorMessage = null;
+    });
+    builder.addCase(getUserMeInfoAction.rejected, (state, action) => {
+      state.requestStatus = "rejected";
+      state.token = null;
+      state.user = null;
+      state.errorMessage = null;
+    });
+    builder.addCase(getUserMeInfoAction.fulfilled, (state, action) => {
+      //TODO
+      if (action.payload.status === "success") {
+        state.user = action.payload.data.user;
+      } else {
+        state.user = null;
+        state.errorMessage = action.payload.errorMessage;
+      }
+      state.requestStatus = "fulfilled";
     });
   },
 });

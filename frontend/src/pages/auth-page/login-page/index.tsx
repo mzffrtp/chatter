@@ -1,4 +1,4 @@
-import { FormEvent } from "react";
+import { FormEvent, useState } from "react";
 import { RootState, appDispatch } from "../../../redux/store";
 import {
   AuthLoginDataType,
@@ -8,6 +8,7 @@ import {
 import { useSelector } from "react-redux";
 import "./components/style.css";
 import { useNavigate } from "react-router-dom";
+import { Alert } from "react-bootstrap";
 
 export default function LoginPage() {
   const authState = useSelector<RootState, AuthStateType>(
@@ -15,6 +16,7 @@ export default function LoginPage() {
   );
 
   const navigate = useNavigate();
+  const [show, setShow] = useState(true);
 
   if (authState.user) {
     navigate("/");
@@ -32,22 +34,24 @@ export default function LoginPage() {
   return (
     <>
       {authState.requestStatus === "pending" ? (
-        <button
-          className="btn btn-primary loading-overlay"
-          type="button"
-          disabled
-        >
-          <span
-            className="spinner-border spinner-border-sm"
-            role="status"
-            aria-hidden="true"
-          ></span>
-          Loading...
-        </button>
+        <div className="d-flex justify-content-center">
+          <div className="text-center">
+            <div className="spinner-border" role="status">
+              <span className="sr-only">Loading...</span>
+            </div>
+          </div>
+        </div>
       ) : (
         <form onSubmit={onFormSubmit}>
           <h1 className="h3 mb-3 fw-normal text-center">Please sign in</h1>
-
+          {authState.errorMessage ? (
+            <Alert variant="danger" dismissible onClose={() => setShow(false)}>
+              <Alert.Heading className="text-center">
+                You got an error!
+              </Alert.Heading>
+              <p>{authState.errorMessage}</p>
+            </Alert>
+          ) : null}
           <div className="form-floating">
             <input
               type="text"

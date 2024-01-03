@@ -21,22 +21,6 @@ export default class BaseController {
         })
     };
 
-    checkAuth(req, res) {
-        const token = req.headers.authorization.split(" ")[1];
-
-        if (!token) {
-            this.showError(res, "No token!");
-            return false
-        }
-        const foundUserId = this.services.cache.get("auth_" + token);
-
-        if (!foundUserId) {
-            this.showError(res, "Invalid token!");
-            return false;
-        }
-        return true;
-    };
-
     registerRoutes(httpServer) {
         const keys = Object.keys(this.routes)
         //console.log("keys", keys);

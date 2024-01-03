@@ -21,6 +21,28 @@ export default class HttpServer {
         this.httpServer.use(cors(corsOptions))
     };
 
+    checkAuth(req, res, next) {
+        if (req.originalUrl.startsWith("/auth")) {
+            next();
+            return;
+        }
+        const token = req.headers.authorization?.split(" ")[1];
+
+        if (!token) {
+            next(this.showError(res, "No token!"));
+            return
+        }
+        const foundUserId = this.services.cache.get("auth_" + token);
+        console.log("foundUserId-->", foundUserId);
+
+        if (!foundUserId) {
+            next(this.showError(res, "Invalid token!"))
+            return
+        }
+        req.authUserId = foundUserId
+        next();
+    };
+
     findAllControllerFiles() {
         const controllerFiles = [];
         const controllerFolder = process.cwd() + "/src/controllers"
