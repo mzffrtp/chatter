@@ -138,10 +138,11 @@ export const authSlice = createSlice({
       state.errorMessage = null;
     });
     builder.addCase(getUserMeInfoAction.fulfilled, (state, action) => {
-      //TODO
       if (action.payload.status === "success") {
         state.user = action.payload.data.user;
       } else {
+        localStorage.removeItem("token");
+        state.token = null;
         state.user = null;
         state.errorMessage = action.payload.errorMessage;
       }

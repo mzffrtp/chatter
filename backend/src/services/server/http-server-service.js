@@ -19,6 +19,7 @@ export default class HttpServer {
             credentials: true, // Allow credentials (cookies, authorization headers, etc.)
         };
         this.httpServer.use(cors(corsOptions))
+        this.httpServer.use(this.checkAuth.bind(this))
     };
 
     checkAuth(req, res, next) {
@@ -29,17 +30,26 @@ export default class HttpServer {
         const token = req.headers.authorization?.split(" ")[1];
 
         if (!token) {
-            next(this.showError(res, "No token!"));
+            res.json({
+                status: "error",
+                errorMessage: "No token!",
+            });
             return
         }
         const foundUserId = this.services.cache.get("auth_" + token);
         console.log("foundUserId-->", foundUserId);
 
         if (!foundUserId) {
-            next(this.showError(res, "Invalid token!"))
+            res.json({
+                status: "error",
+                errorMessage: "Invalid token!",
+            });
             return
         }
         req.authUserId = foundUserId
+
+
+
         next();
     };
 

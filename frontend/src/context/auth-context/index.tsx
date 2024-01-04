@@ -1,7 +1,10 @@
 import { ReactNode, createContext } from "react";
 import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
-import { AuthStateType } from "../../redux/slices/auth-slice";
+import { RootState, appDispatch } from "../../redux/store";
+import {
+  AuthStateType,
+  getUserMeInfoAction,
+} from "../../redux/slices/auth-slice";
 
 export type AuthContextComponentPropsType = {
   children: ReactNode;
@@ -11,13 +14,13 @@ export type AuthoutContextType = {
 };
 const AuthoutContextProvider = createContext<AuthoutContextType>({});
 
-export default function LayoutContext(props: AuthContextComponentPropsType) {
+export default function AuthContext(props: AuthContextComponentPropsType) {
   const authState = useSelector<RootState, AuthStateType>(
     (state) => state.authState
   );
 
-  if (!authState.user) {
-    //! token in local storage but not user
+  if (authState.token && !authState.user) {
+    appDispatch(getUserMeInfoAction());
   }
   const contextValue: AuthoutContextType = {};
 

@@ -1,4 +1,4 @@
-import mongoose from "mongoose";
+import mongoose, { Schema } from "mongoose";
 
 const roomSchema = new mongoose.Schema({
     userId: {
@@ -8,7 +8,7 @@ const roomSchema = new mongoose.Schema({
     },
     name: {
         type: String,
-        required: true
+        required: [true, "Room name cannot be blank"]
     },
     visibility: {
         type: String,
@@ -18,6 +18,12 @@ const roomSchema = new mongoose.Schema({
     maxClient: {
         type: Number,
         default: 0
+    },
+    peers: {
+        type: [Schema.ObjectId],
+        ref: "User",
+        default: []
+
     }
 
 })
