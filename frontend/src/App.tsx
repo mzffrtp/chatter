@@ -7,6 +7,7 @@ const HomePage = lazy(() => import("./pages/home-page"));
 const ChatPage = lazy(() => import("./pages/chat-page"));
 const LoginPage = lazy(() => import("./pages/auth-page/login-page"));
 const RegisterPage = lazy(() => import("./pages/auth-page/register-page"));
+const CreateRoomPage = lazy(() => import("./pages/room-page/create-room-page"));
 
 function App() {
   return (
@@ -30,6 +31,16 @@ function App() {
                 </Suspense>
               }
             />
+            <Route path="room">
+              <Route
+                path="createRoom"
+                element={
+                  <Suspense fallback={<>Loading...</>}>
+                    <CreateRoomPage />
+                  </Suspense>
+                }
+              />
+            </Route>
             <Route path="/auth">
               <Route
                 path="login"

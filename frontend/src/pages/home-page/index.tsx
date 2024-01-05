@@ -1,3 +1,4 @@
+import { Link } from "react-router-dom";
 import RoomBox from "../../components/room-box";
 
 export default function HomePage() {
@@ -13,9 +14,9 @@ export default function HomePage() {
               connect and spark exciting discussions!"
             </p>
             <p>
-              <a href="#" className="btn btn-primary mx-2">
-                Main call to action
-              </a>
+              <Link to="/room/createRoom" className="btn btn-primary mx-2">
+                Create Room
+              </Link>
               <a href="#" className="btn btn-secondary mx-2">
                 Secondary action
               </a>

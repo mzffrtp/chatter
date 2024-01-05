@@ -32,11 +32,23 @@ export default class RoomController extends BaseController {
 
     createRoom(req, res) {
         console.log("RoomController::createRoom () function invoked");
-        createRoomValidator.validate(req.body);
+
+        console.log("RoomController::raw input -->", req.body);
+
+        const validResult = createRoomValidator.validate(req.body);
+        if (validResult.error) {
+            this.showError(validResult.error)
+            return;
+        }
+
+        console.log("RoomController::validResult-->", rvalidResult);
+
+        //todo insert obj to db
+        validResult.value;
 
         this.showSuccess(res, {
             status: "Room created succesfully",
-            roomInfo: null
+            roomInfo: validResult
         })
     };
 
