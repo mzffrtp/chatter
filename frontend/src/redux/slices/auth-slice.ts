@@ -1,7 +1,6 @@
 import { createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { chatHttpApi } from "../../utils/api";
-
-export type AsyncStatus = "idle" | "pending" | "fulfilled" | "rejected";
+import { AsyncStatus } from "./utils";
 
 export type UserType = {
   username: string;

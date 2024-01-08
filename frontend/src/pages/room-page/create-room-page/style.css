@@ -1,0 +1,19 @@
+/* Add these CSS classes for animations */
+
+.form-control-animate {
+    transition: all 0.3s ease-in-out;
+  }
+  
+  .form-check-animate {
+    transition: transform 0.3s ease-in-out;
+  }
+  
+  .btn-animate {
+    transition: transform 0.3s ease-in-out, box-shadow 0.3s ease-in-out;
+  }
+  
+  .btn-animate:hover {
+    transform: scale(1.05);
+    box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+  }
+  
