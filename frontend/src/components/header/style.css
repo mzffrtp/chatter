@@ -1,0 +1,15 @@
+@media (max-width: 992px) {
+    /* Dropdown direction for smaller screens */
+    #dropdown-button-drop-down + .dropdown-menu {
+      right: 0;
+      left: auto;
+    }
+  }
+  
+  @media (min-width: 992px) {
+    /* Dropdown direction for larger screens */
+    #dropdown-button-drop-end + .dropdown-menu {
+      right: auto;
+      left: 0;
+    }
+  }

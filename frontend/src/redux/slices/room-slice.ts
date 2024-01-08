@@ -28,10 +28,23 @@ export const createRoomAsyncAction = createAsyncThunk(
   }
 );
 export interface RoomStateType {
+  lastRooms: RoomType[];
+  lastRoomInitialized: boolean;
+
+  userRooms: RoomType[];
+  userRoomsInitializied: boolean;
+
   requestStatus: AsyncStatus;
   errorMessage: string | null;
 }
+
 const initialState: RoomStateType = {
+  lastRooms: [],
+  lastRoomInitialized: false,
+
+  userRooms: [],
+  userRoomsInitializied: false,
+
   requestStatus: "idle",
   errorMessage: null,
 };
@@ -45,6 +58,7 @@ export const roomSlice = createSlice({
     },
   },
   extraReducers: (builder) => {
+    //! create room action
     builder.addCase(createRoomAsyncAction.pending, (state, action) => {
       (state.requestStatus = "pending"), (state.errorMessage = null);
     });
@@ -59,14 +73,15 @@ export const roomSlice = createSlice({
           ">> 🚀 file: authSlice.ts:58 🚀 state.errorMessage:",
           state.errorMessage
         );
-
         state.requestStatus = "fulfilled";
         return;
       }
-
       state.errorMessage = null;
       state.requestStatus = "fulfilled";
     });
+    //! last room list action
+
+    //! user room list action
   },
 });
 

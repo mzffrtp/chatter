@@ -93,6 +93,7 @@ export default function CreateRoomPage() {
                 type="submit"
                 variant="outline-success"
                 className="w-100 rounded-pill btn-animate"
+                disabled={!!roomState.errorMessage}
               >
                 Create Room
               </Button>
