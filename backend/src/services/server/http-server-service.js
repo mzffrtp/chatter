@@ -14,11 +14,12 @@ export default class HttpServer {
         this.httpServer.use(express.json())
 
         const corsOptions = {
-            origin: '*', // Allow requests from any origin
+            origin: ['http://localhost:5173', "http://127.0.0.1:5000"], // Allow requests from any origin
             methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
             credentials: true, // Allow credentials (cookies, authorization headers, etc.)
         };
         this.httpServer.use(cors(corsOptions))
+
         this.httpServer.use(this.checkAuth.bind(this))
     };
 
@@ -36,7 +37,7 @@ export default class HttpServer {
             });
             return
         }
-        const foundUserId = this.services.cache.get("auth_" + token);
+        const foundUserId = this.services.cache.getSync("auth_" + token);
         console.log("foundUserId-->", foundUserId);
 
         if (!foundUserId) {
@@ -47,8 +48,6 @@ export default class HttpServer {
             return
         }
         req.authUserId = foundUserId
-
-
 
         next();
     };

@@ -8,8 +8,8 @@ import {
   NavDropdown,
 } from "react-bootstrap";
 import { useSelector } from "react-redux";
-import { RootState } from "../../redux/store";
-import { AuthStateType } from "../../redux/slices/auth-slice";
+import { RootState, appDispatch } from "../../redux/store";
+import { AuthStateType, logoutAction } from "../../redux/slices/auth-slice";
 
 export default function Header() {
   const authState = useSelector<RootState, AuthStateType>(
@@ -43,7 +43,16 @@ export default function Header() {
                   <Link to="/user/profile" className="btn btn-outline-info">
                     {authState.user.username}
                   </Link>
-                  <Button variant="outline-danger mx-3">Logout</Button>
+                  <Button
+                    variant="outline-danger mx-3"
+                    onClick={(e) => {
+                      if (confirm("Wamt to logout?")) {
+                        appDispatch(logoutAction());
+                      }
+                    }}
+                  >
+                    Logout
+                  </Button>
                 </Form>
               ) : (
                 <NavDropdown

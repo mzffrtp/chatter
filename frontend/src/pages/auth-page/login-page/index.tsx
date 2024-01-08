@@ -14,7 +14,11 @@ export default function LoginPage() {
   const authState = useSelector<RootState, AuthStateType>(
     (state) => state.authState
   );
+  const [showPassword, setShowPassword] = useState(false);
 
+  const togglePasswordVisibility = () => {
+    setShowPassword((prevShowPassword) => !prevShowPassword);
+  };
   const navigate = useNavigate();
   const [show, setShow] = useState(true);
 
@@ -63,14 +67,24 @@ export default function LoginPage() {
           </div>
           <div className="form-floating">
             <input
-              type="password"
+              type={showPassword ? "text" : "password"}
               className="form-control"
               name="password"
               placeholder="Password"
             />
             <label htmlFor="floatingPassword">Password</label>
+            <div className="checkbox mb-3">
+              <label>
+                <input
+                  type="checkbox"
+                  value="show-password"
+                  onChange={togglePasswordVisibility}
+                  id="showPasswordToggle"
+                />{" "}
+                Show Password
+              </label>
+            </div>
           </div>
-
           <div className="checkbox mb-3">
             <label>
               <input type="checkbox" value="remember-me" /> Remember me

@@ -36,7 +36,7 @@ export default class UserController extends BaseController {
         if (typeof token === "undefined") {
             return this.showError(res, "No token!");
         }
-        const foundUserId = this.services.cache.get("auth_" + token);
+        const foundUserId = this.services.cache.getSync("auth_" + token);
 
         if (typeof foundUserId === "undefined") {
             return this.showError(res, "Invalid token!");
@@ -44,7 +44,7 @@ export default class UserController extends BaseController {
 
         console.log(">>>  foundUserId:", foundUserId);
 
-        this.services.cache.del("auth_" + token);
+        this.services.cache.remove("auth_" + token);
 
         return this.showSuccess(res, null);
     }

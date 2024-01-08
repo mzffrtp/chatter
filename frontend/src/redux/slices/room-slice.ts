@@ -1,4 +1,3 @@
-import { createRoomAsyncAction } from "./room-slice";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AsyncStatus } from "./utils";
 import { chatHttpApi } from "../../utils/api";
@@ -9,7 +8,7 @@ export type RoomType = {
   name: string;
   visibility: "public" | "private";
   maxClient: number;
-  peers: string[];
+  peers?: string[];
 };
 
 export type CreateRoomDataType = {
@@ -23,7 +22,7 @@ export const createRoomAsyncAction = createAsyncThunk(
   "room.create",
   async (data: CreateRoomDataType, thunkApi) => {
     const api = chatHttpApi();
-    const response = await api.post("/room/create", data);
+    const response = await api.post("/room/createRoom", data);
 
     return response.data;
   }
@@ -55,7 +54,12 @@ export const roomSlice = createSlice({
     builder.addCase(createRoomAsyncAction.fulfilled, (state, action) => {
       console.log(">> 🚀 file: authSlice.ts:56 🚀 action:", action.payload);
       if (action.payload.status === "error") {
-        state.errorMessage = action.payload.errorMessage;
+        state.errorMessage = action.payload.errorMessage.details[0].message;
+        console.log(
+          ">> 🚀 file: authSlice.ts:58 🚀 state.errorMessage:",
+          state.errorMessage
+        );
+
         state.requestStatus = "fulfilled";
         return;
       }

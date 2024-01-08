@@ -1,3 +1,4 @@
+import { Room } from "../models/roomModel.js";
 import createRoomValidator from "../request-validators/room/create-room-validator.js";
 import BaseController from "./base-controller.js";
 
@@ -9,7 +10,6 @@ export default class RoomController extends BaseController {
         "/room/sendMessage": this.sendMessage.bind(this),
         "/room/deleteRoom": this.deleteRoom.bind(this),
         "/room/listRoom": this.listRoom.bind(this),
-
     };
 
     deleteRoom(req, res) {
@@ -30,25 +30,27 @@ export default class RoomController extends BaseController {
         })
     };
 
-    createRoom(req, res) {
+    async createRoom(req, res) {
         console.log("RoomController::createRoom () function invoked");
-
-        console.log("RoomController::raw input -->", req.body);
 
         const validResult = createRoomValidator.validate(req.body);
         if (validResult.error) {
-            this.showError(validResult.error)
+            this.showError(res, validResult.error)
             return;
         }
 
-        console.log("RoomController::validResult-->", rvalidResult);
+        console.log(validResult, "RoomController::validResult-->");
 
-        //todo insert obj to db
-        validResult.value;
+        const newRoom = await Room.create({
+            ...validResult.value,
+            userId: req.authUserId
+        })
+        console.log("room controller, new room -->", newRoom);
+
 
         this.showSuccess(res, {
             status: "Room created succesfully",
-            roomInfo: validResult
+            newRoom
         })
     };
 

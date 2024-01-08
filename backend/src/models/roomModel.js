@@ -4,11 +4,12 @@ const roomSchema = new mongoose.Schema({
     userId: {
         type: Schema.ObjectId,
         ref: "User",
-        required: [true, "UserID cannot be blank"]
+        required: [true, "UserId cannot be blank"]
     },
     name: {
         type: String,
-        required: [true, "Room name cannot be blank"]
+        required: [true, "Room name cannot be blank"],
+        //unique: [true, "Room name should be uniq!"],
     },
     visibility: {
         type: String,
@@ -28,4 +29,4 @@ const roomSchema = new mongoose.Schema({
 
 })
 
-export default mongoose.model("Room", roomSchema)
+export const Room = mongoose.model("Room", roomSchema)

@@ -1,11 +1,15 @@
 import { Button, Form } from "react-bootstrap";
 import "./style.css";
 import { formJson } from "../../../utils/functions";
-import { appDispatch } from "../../../redux/store";
+import { RootState, appDispatch } from "../../../redux/store";
 import {
   CreateRoomDataType,
-  createRoom,
+  RoomStateType,
+  createRoomAsyncAction,
 } from "../../../redux/slices/room-slice";
+import { Alert } from "react-bootstrap";
+import { useSelector } from "react-redux";
+import { useState } from "react";
 
 export default function CreateRoomPage() {
   const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
@@ -13,16 +17,32 @@ export default function CreateRoomPage() {
 
     //TODO choose between axios form to json or formjson from utils.
     const value = formJson<CreateRoomDataType>(event.currentTarget);
-    appDispatch(createRoom(value));
+    //TODO
+    //! wrong actio called
+    appDispatch(createRoomAsyncAction(value));
   };
+
+  const roomState = useSelector<RootState, RoomStateType>(
+    (state) => state.roomState
+  );
+  const [show, setShow] = useState(true);
+
   return (
-    <section className="py-5 text-center container">
+    <section className="p-5 text-center container my-3">
       <div className="row pt-lg-5">
         <div className="col-lg-6 col-md-8 mx-auto">
           <h1 className="fw-light">Create a Chatteria!</h1>
-          <p className="lead text-muted">Rules: Respect each other!</p>
+          <p className="lead text-muted">Rules: We respect each other!</p>
         </div>
       </div>
+      {roomState.errorMessage ? (
+        <Alert variant="warning" dismissible onClose={() => setShow(false)}>
+          <Alert.Heading className="text-center">
+            You got an error!
+          </Alert.Heading>
+          <p>{roomState.errorMessage}</p>
+        </Alert>
+      ) : null}
       <div className="row">
         <div className="col-lg-6 col-md-8 mx-auto">
           <Form onSubmit={onSubmit}>

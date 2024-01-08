@@ -3,7 +3,7 @@ import morgan from "morgan";
 import mongoose from "mongoose";
 import HttpServer from "./services/server/http-server-service.js";
 import WebsocketServer from "./services/server/websocket-server-service.js";
-import NodeCache from "node-cache";
+import { Cache } from "file-system-cache";
 
 
 dotenv.config({
@@ -21,7 +21,12 @@ export const bufferToString = (buffer, encoding = "ascii") => {
             mongoConnection: null,
             httpServerService: null,
             websocketService: null,
-            cache: new NodeCache(),
+            cache: new Cache({
+                basePath: "./.cache", // (optional) Path where cache files are stored (default).
+                ns: "aaa",   // (optional) A grouping namespace for items.
+                hash: "sha1",         // (optional) A hashing algorithm used within the cache key.
+                ttl: 60 * 60 * 5              // (optional) A time-to-live (in secs) on how long an item remains cached.
+            })
         };
 
         const mongoConnection = await mongoose.connect(process.env.MONGODB_CONNECTION)

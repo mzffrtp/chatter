@@ -43,7 +43,7 @@ export default class AuthController extends BaseController {
             const token = crypto.randomUUID();
             console.log("token-->", token);
 
-            console.log(this.services.cache.set("auth_" + token, foundUser._id, 60 * 60 * 5))
+            console.log(this.services.cache.setSync("auth_" + token, foundUser._id, 60 * 60 * 5))
 
             return this.showSuccess(res, {
                 data: token,
