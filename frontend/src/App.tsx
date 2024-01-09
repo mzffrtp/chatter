@@ -1,9 +1,10 @@
 import { BrowserRouter, Route, Routes } from "react-router-dom";
-import { Suspense, lazy } from "react";
+import { Suspense, lazy, useEffect } from "react";
 import LayoutContext from "./context/layout-context-component";
 import AuthContext from "./context/auth-context";
 import { useSelector } from "react-redux";
-import { RootState } from "./redux/store";
+import { RootState, appDispatch } from "./redux/store";
+import { getLastRoomsAction } from "./redux/slices/room-slice";
 
 const HomePage = lazy(() => import("./pages/home-page"));
 const ChatPage = lazy(() => import("./pages/chat-page"));
@@ -14,6 +15,9 @@ const ListRoomPage = lazy(() => import("./pages/room-page/list-room-page"));
 
 function App() {
   const authState = useSelector((state: RootState) => state.authState);
+  useEffect(() => {
+    appDispatch(getLastRoomsAction());
+  }, []);
 
   return (
     <BrowserRouter>

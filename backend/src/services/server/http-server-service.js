@@ -24,7 +24,10 @@ export default class HttpServer {
     };
 
     checkAuth(req, res, next) {
-        if (req.originalUrl.startsWith("/auth")) {
+        if (
+            req.originalUrl.startsWith("/auth")
+            || req.originalUrl.startsWith("/public")
+        ) {
             next();
             return;
         }

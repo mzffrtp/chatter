@@ -27,6 +27,17 @@ export const createRoomAsyncAction = createAsyncThunk(
     return response.data;
   }
 );
+
+export const getLastRoomsAction = createAsyncThunk(
+  "room.getLastRoom",
+  async (data: undefined, thunkApi) => {
+    const api = chatHttpApi();
+    const response = await api.get("/public/room/lastRooms");
+
+    return response.data;
+  }
+);
+
 export interface RoomStateType {
   lastRooms: RoomType[];
   lastRoomInitialized: boolean;
@@ -80,6 +91,10 @@ export const roomSlice = createSlice({
       state.requestStatus = "fulfilled";
     });
     //! last room list action
+    builder.addCase(getLastRoomsAction.fulfilled, (state, action) => {
+      state.lastRooms = action.payload.data.lastRooms;
+      state.lastRoomInitialized = true;
+    });
 
     //! user room list action
   },

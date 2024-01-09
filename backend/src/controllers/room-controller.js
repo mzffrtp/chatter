@@ -10,6 +10,7 @@ export default class RoomController extends BaseController {
         "/room/sendMessage": this.sendMessage.bind(this),
         "/room/deleteRoom": this.deleteRoom.bind(this),
         "/room/listRoom": this.listRoom.bind(this),
+        "/public/room/lastRooms": (req, res) => this.lastRooms(req, res),
     };
 
     deleteRoom(req, res) {
@@ -54,16 +55,27 @@ export default class RoomController extends BaseController {
         })
     };
 
+    async lastRooms(req, res) {
+        try {
+            console.log("RoomController::lastRoom () function invoked");
+
+            const lastRooms = await Room.find().sort({ _id: -1 }).limit(6).exec()
+            console.log("lastRooms-->", lastRooms);
+
+            this.showSuccess(res, {
+                status: "Lastrooms listed succesfully",
+                lastRooms
+            });
+        } catch (e) {
+            console.log("error lastroom-->", e);
+        }
+    };
     joinRoom(req, res) {
         console.log(">> RoomController::join() function invoked.");
 
-        this.services.websocketService.sendData("default", {
-            message: "Yeni bir kullanıcı odaya girdi.",
-        });
-
         this.showSuccess(res, {
-            status: "Joined room succesfully",
-            roomInfo: null
+            status: "joined room succesfully",
+
         });
     };
 

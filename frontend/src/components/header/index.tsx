@@ -8,7 +8,6 @@ import {
   NavDropdown,
   Dropdown,
   SplitButton,
-  DropdownButton,
 } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { RootState, appDispatch } from "../../redux/store";
@@ -16,6 +15,7 @@ import { AuthStateType, logoutAction } from "../../redux/slices/auth-slice";
 import "./style.css";
 import { useEffect, useState } from "react";
 import { useWindowSize } from "react-use";
+import { DropDirection } from "react-bootstrap/esm/DropdownContext";
 
 export default function Header() {
   const authState = useSelector<RootState, AuthStateType>(
@@ -23,11 +23,11 @@ export default function Header() {
   );
 
   const { width } = useWindowSize();
-  const [dropDirection, setDropDirection] = useState("down");
-  const [mbClass, setMbClass] = useState("");
+  const [dropDirection, setDropDirection] = useState<DropDirection>("down");
+  const [mbClass, setMbClass] = useState<string>("");
 
   useEffect(() => {
-    setDropDirection(width < 992 ? "right" : "down");
+    setDropDirection(width < 992 ? "end" : "down");
     setMbClass(width < 992 ? "mb-3" : "mx-3");
   }, [width]);
 
@@ -54,7 +54,7 @@ export default function Header() {
                   id="dropdown-button-drop"
                   drop={dropDirection}
                   variant="info"
-                  title="Room"
+                  title="Rooms"
                   className={mbClass}
                 >
                   <Dropdown.Item eventKey="1">

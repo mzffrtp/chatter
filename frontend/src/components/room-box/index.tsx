@@ -1,4 +1,9 @@
-export default function RoomBox() {
+import { RoomType } from "../../redux/slices/room-slice";
+
+export type RoomBoxPropsType = {
+  room: RoomType;
+};
+export default function RoomBox(props: RoomBoxPropsType) {
   return (
     <div>
       <div className="col">
@@ -16,7 +21,7 @@ export default function RoomBox() {
             <title>Placeholder</title>
             <rect width="100%" height="100%" fill="#55595c" />
             <text x="50%" y="50%" fill="#eceeef" dy=".3em">
-              Thumbnail
+              {props.room.name}
             </text>
           </svg>
 
