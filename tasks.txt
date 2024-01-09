@@ -24,3 +24,8 @@ TASKS:
 - User log page
 - Lazy Load
 - Context for auth and applayouts
+
+------------
+todos:
+- header -->auth, room 
+- create room --> error message

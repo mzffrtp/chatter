@@ -5,7 +5,7 @@ import { RootState } from "../../redux/store";
 
 export default function HomePage() {
   const roomState = useSelector((state: RootState) => state.roomState);
-  console.log("roomstate-->", roomState);
+  console.log("🚀 ~ HomePage ~ roomState:", roomState);
 
   return (
     <>

@@ -42,16 +42,16 @@ export default class RoomController extends BaseController {
 
         console.log(validResult, "RoomController::validResult-->");
 
-        const newRoom = await Room.create({
+        const room = await Room.create({
             ...validResult.value,
             userId: req.authUserId
         })
-        console.log("room controller, new room -->", newRoom);
+        console.log("room controller, new room -->", room);
 
 
         this.showSuccess(res, {
             status: "Room created succesfully",
-            newRoom
+            room
         })
     };
 

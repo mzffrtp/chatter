@@ -17,3 +17,13 @@ export const chatHttpApi: () => AxiosInstance = () => {
 
   return api;
 };
+
+export type ChatApiResponseType<T> =
+  | {
+      status: "error";
+      errorMessage: string;
+    }
+  | {
+      status: "success";
+      data: T;
+    };

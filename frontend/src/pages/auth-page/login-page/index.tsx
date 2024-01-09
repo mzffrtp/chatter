@@ -26,8 +26,6 @@ export default function LoginPage() {
     navigate("/");
   }
 
-  console.log("authState-->", authState);
-
   function onFormSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 

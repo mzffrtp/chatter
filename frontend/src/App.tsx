@@ -18,7 +18,6 @@ function App() {
   useEffect(() => {
     appDispatch(getLastRoomsAction());
   }, []);
-
   return (
     <BrowserRouter>
       <AuthContext>

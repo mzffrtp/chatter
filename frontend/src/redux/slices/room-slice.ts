@@ -1,6 +1,9 @@
+import { ChatApiResponseType } from "./../../utils/api";
 import { PayloadAction, createAsyncThunk, createSlice } from "@reduxjs/toolkit";
 import { AsyncStatus } from "./utils";
 import { chatHttpApi } from "../../utils/api";
+import { appDispatch } from "../store";
+import { showSwal } from "../../utils/functions";
 
 export type RoomType = {
   _id: string;
@@ -17,17 +20,35 @@ export type CreateRoomDataType = {
   maxClient: number;
 };
 
-//TODO is createRoomAsyncAction needed?
+export async function creatRoomService(value: CreateRoomDataType) {
+  const response = await chatHttpApi().post<
+    ChatApiResponseType<{ room: RoomType }>
+  >("/room/createRoom", value);
+  console.log("🚀 ~ creatRoomService ~ value:", value);
+
+  if (response.data.status === "success") {
+    console.log("🚀 ~ creatRoomService ~ response:", response.data.data.room);
+
+    appDispatch(createRoom(response.data.data.room));
+    showSwal("success", "Room created successfully");
+    appDispatch(getLastRoomsAction());
+
+    return response.data.data.room;
+  } else {
+    const swalErrorMessage = response.data.errorMessage.details[0].message;
+    showSwal("error", swalErrorMessage);
+  }
+}
+
 export const createRoomAsyncAction = createAsyncThunk(
-  "room.create",
-  async (data: CreateRoomDataType, thunkApi) => {
+  "room.createRoom",
+  async (data: CreateRoomDataType, thunkAPI) => {
     const api = chatHttpApi();
     const response = await api.post("/room/createRoom", data);
 
     return response.data;
   }
 );
-
 export const getLastRoomsAction = createAsyncThunk(
   "room.getLastRoom",
   async (data: undefined, thunkApi) => {
@@ -80,10 +101,7 @@ export const roomSlice = createSlice({
       console.log(">> 🚀 file: authSlice.ts:56 🚀 action:", action.payload);
       if (action.payload.status === "error") {
         state.errorMessage = action.payload.errorMessage.details[0].message;
-        console.log(
-          ">> 🚀 file: authSlice.ts:58 🚀 state.errorMessage:",
-          state.errorMessage
-        );
+
         state.requestStatus = "fulfilled";
         return;
       }

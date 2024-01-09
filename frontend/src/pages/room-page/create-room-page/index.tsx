@@ -5,26 +5,33 @@ import { RootState, appDispatch } from "../../../redux/store";
 import {
   CreateRoomDataType,
   RoomStateType,
-  createRoomAsyncAction,
+  creatRoomService,
 } from "../../../redux/slices/room-slice";
 import { Alert } from "react-bootstrap";
 import { useSelector } from "react-redux";
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function CreateRoomPage() {
-  const onSubmit = (event: React.FormEvent<HTMLFormElement>) => {
+  const navigate = useNavigate();
+
+  const onSubmit = async (event: React.FormEvent<HTMLFormElement>) => {
     event.preventDefault();
 
-    //TODO choose between axios form to json or formjson from utils.
     const value = formJson<CreateRoomDataType>(event.currentTarget);
-    //TODO
-    //! wrong actio called
-    appDispatch(createRoomAsyncAction(value));
+
+    const result = await creatRoomService(value);
+    console.log("🚀 ~ onSubmit ~ result:", result);
+
+    if (result) {
+      navigate("/room/" + result._id);
+    }
   };
 
   const roomState = useSelector<RootState, RoomStateType>(
     (state) => state.roomState
   );
+  console.log("🚀 ~ CreateRoomPage ~ roomState:", roomState);
   const [show, setShow] = useState(true);
 
   return (
@@ -36,7 +43,7 @@ export default function CreateRoomPage() {
         </div>
       </div>
       {roomState.errorMessage ? (
-        <Alert variant="warning" dismissible onClose={() => setShow(false)}>
+        <Alert variant="danger" dismissible onClose={() => setShow(false)}>
           <Alert.Heading className="text-center">
             You got an error!
           </Alert.Heading>
