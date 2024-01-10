@@ -60,7 +60,6 @@ export default class RoomController extends BaseController {
             console.log("RoomController::lastRoom () function invoked");
 
             const lastRooms = await Room.find().sort({ _id: -1 }).limit(6).exec()
-            console.log("lastRooms-->", lastRooms);
 
             this.showSuccess(res, {
                 status: "Lastrooms listed succesfully",
