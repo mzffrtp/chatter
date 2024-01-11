@@ -14,7 +14,7 @@ export default class HttpServer {
         this.httpServer.use(express.json())
 
         const corsOptions = {
-            origin: ['http://localhost:5173', "http://127.0.0.1:5000"], // Allow requests from any origin
+            origin: ['http://localhost:5173', "http://127.0.0.1:5000", "ws://127.0.0.1:5001"], // Allow requests from any origin
             methods: 'GET,HEAD,PUT,PATCH,POST,DELETE',
             credentials: true, // Allow credentials (cookies, authorization headers, etc.)
         };

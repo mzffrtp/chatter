@@ -7,6 +7,7 @@ export default class WebsocketServer {
 
     //! WHICH WS WHICH USER?
     clients = [];
+
     constructor(services) {
         this.services = services
         console.log("Websocket server instance created");
@@ -22,10 +23,29 @@ export default class WebsocketServer {
         return true
     }
 
+    async startHeartBeat() {
+
+        console.log(("sending HB data to these clients:" + this.clients.length));
+        this.clients = this.clients.filter((item) => item)
+
+        this.clients.forEach((ws, index) => {
+            try {
+                if (ws.lasthbTime < (Date.now() - 60)) {
+                    delete this.clients[index]
+                } else {
+                    ws.send(JSON.stringify({ hb: Date.now() }))
+                }
+            } catch (e) {
+                delete this.clients[index]
+            }
+        })
+        setTimeout(() => this.startHeartBeat(), 5_000)
+    }
     async start() {
         console.log("Websocket server startting");
 
         this.server = uWS.App()
+        this, this.startHeartBeat();
 
         this.server
             .ws("/*", {
@@ -41,7 +61,9 @@ export default class WebsocketServer {
                             status: "success",
                             data: "default odasina baglandiniz"
                         })
-                    )
+                    );
+
+                    this.clients.push(ws)
                 },
                 message: (ws, message, isBinary) => {
                     console.log(
