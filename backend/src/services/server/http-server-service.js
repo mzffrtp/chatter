@@ -38,7 +38,7 @@ export default class HttpServer {
                 status: "error",
                 errorMessage: "No token!",
             });
-            return
+            return;
         }
         const foundUserId = this.services.cache.getSync("auth_" + token);
         console.log("foundUserId-->", foundUserId);

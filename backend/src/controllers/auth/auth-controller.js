@@ -24,13 +24,14 @@ export default class AuthController extends BaseController {
             username: req.body.username,
         })
 
-        if (!foundUser || !bcrypt.compareSync(req.body.password + process.env.APP_KEY, foundUser.password)) {
+        if (
+            !foundUser
+            || !bcrypt.compareSync(
+                req.body.password + process.env.APP_KEY, foundUser.password)) {
             return this.showError(
                 res,
                 "User not found, please check your credentilas!")
         }
-
-        console.log("auth possible-->", foundUser);
 
         req.body.username;
         req.body.password;
@@ -41,21 +42,8 @@ export default class AuthController extends BaseController {
         if (process.env.AUTH_MECHANISM === "token") {
             //! create a hash--> send to client --> keep it in cashe
             const token = crypto.randomUUID();
-            console.log("token-->", token);
 
-            console.log(this.services.cache.setSync("auth_" + token, foundUser._id, 60 * 60 * 5))
-
-            return this.showSuccess(res, {
-                data: token,
-                user: {
-                    username: foundUser.username,
-                    email: foundUser.email,
-                    firstname: foundUser.firstname,
-                    lastname: foundUser.lastname,
-                    gender: foundUser.gender,
-                }
-            });
-
+            this.services.cache.setSync("auth_" + token, foundUser._id, 60 * 60 * 5)
         } else if (process.env.AUTH_MECHANISM === "jwt") {
             //todo handle here,
             //todo token = jwt.sign();
@@ -63,6 +51,16 @@ export default class AuthController extends BaseController {
             // error management
         }
 
+        return this.showSuccess(res, {
+            data: token,
+            user: {
+                username: foundUser.username,
+                email: foundUser.email,
+                firstname: foundUser.firstname,
+                lastname: foundUser.lastname,
+                gender: foundUser.gender,
+            }
+        });
     };
 
     register(req, res) {

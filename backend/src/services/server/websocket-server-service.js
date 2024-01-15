@@ -24,17 +24,16 @@ export default class WebsocketServer {
     }
 
     async startHeartBeat() {
+        this.clients = this.clients.filter((item) => item)
 
         console.log(("sending HB data to these clients:" + this.clients.length + " " + Date.now()));
-        this.clients = this.clients.filter((item) => item)
+
 
         this.clients.forEach((ws, index) => {
 
-            const enc = new TextDecoder("utf-8");
-            const remoteAdress = enc.decode(ws.getRemoteAddressAsText())
-
-            console.log("🚀 ~ WebsocketServer ~ this.clients.forEach ~ ws:", remoteAdress)
             try {
+                console.log("🚀 ~ WebsocketServer ~ ws client remote adress", bufferToString(ws.getRemoteAddressAsText()))
+
                 if (ws.lasthbTime < (Date.now() - 60)) {
                     delete this.clients[index]
                 } else {
@@ -50,7 +49,7 @@ export default class WebsocketServer {
         console.log("Websocket server startting");
 
         this.server = uWS.App()
-        this, this.startHeartBeat();
+        this.startHeartBeat();
 
         this.server
             .ws("/*", {
@@ -58,17 +57,21 @@ export default class WebsocketServer {
                 maxPayloadLength: 16 * 1024 * 1024,
                 idleTimeout: 10,
                 open: (ws) => {
-                    console.log(
-                        "WebSocket connection received, IP: " + bufferToString(ws.getRemoteAddressAsText()));
-                    ws.subscribe("default");
-                    ws.send(
-                        JSON.stringify({
-                            status: "success",
-                            data: "default odasina baglandiniz"
-                        })
-                    );
+                    try {
+                        console.log(
+                            "WebSocket connection received, IP: " + bufferToString(ws.getRemoteAddressAsText()));
+                        ws.subscribe("default");
+                        ws.send(
+                            JSON.stringify({
+                                status: "success",
+                                data: "default odasina baglandiniz"
+                            })
+                        );
 
-                    this.clients.push(ws)
+                        this.clients.push(ws)
+                    } catch (e) {
+                        console.log("🚀 ~ WebsocketServer ~ start ~ e:", e)
+                    }
                 },
                 message: (ws, message, isBinary) => {
                     console.log(
@@ -76,16 +79,54 @@ export default class WebsocketServer {
                         bufferToString(ws.getRemoteAddressAsText()),
                         bufferToString(message, "utf-8"));
 
-                    if (message.command === "auth/login") {
-                        //todo handle here!
-                    }
-                    else if (message.command === "join_room") { }
-                    else if (message.command === "join_room") { }
+                    //!message from fontend websocket
+                    let messageStr = bufferToString(message, "utf-8");
+                    let messageObj = JSON.parse(messageStr)
+                    console.log("🚀 ~ WebsocketServer ~ start ~ messageObj:", messageObj)
 
+                    if (message.command === "auth_login") {
+                        const websocketFoundUserId = this.services.cache.getSync(
+                            "auth_" + messageObj.token
+                        )
+
+                        //!
+                        console.log("🚀 ~ WebsocketServer ~ start ~ websocketFoundUserId:", websocketFoundUserId)
+                        console.log(">>messageObj.token-->", messageObj.token);
+                        //!
+
+                        if (websocketFoundUserId) {
+                            ws.getUserData().userId = websocketFoundUserId;
+
+                            ws.send(JSON.stringify({
+                                status: "success",
+                                data: "Successfully loged in!"
+                            }))
+                        } else {
+
+                            ws.send(
+                                JSON.stringify({
+                                    status: "error",
+                                    data: "Invalid token, connection lost!!"
+                                }));
+
+                            setTimeout(() => {
+                                ws.close();
+                            }, 2_000);
+
+                        }
+                    }
+                    else if (message.command === "auth_logout") { }
+                    else if (message.command === "room_send") { }
+                    else if (message.command === "room_join") { }
+
+
+                    {/*
                     let ok = ws.send(JSON.stringify({
                         status: "success",
                         data: "This data sent from server.",
                     }), false)
+                
+                */}
                 },
                 drain: (ws) => {
                     console.log(
@@ -97,6 +138,8 @@ export default class WebsocketServer {
                     console.log(
                         "WebSocket connection closed ");
                 },
+
+                //todo move from clients list
             })
             .any("/*", (res, req) => {
                 res.end("HTTP Server response!");
