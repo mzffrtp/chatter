@@ -25,10 +25,15 @@ export default class WebsocketServer {
 
     async startHeartBeat() {
 
-        console.log(("sending HB data to these clients:" + this.clients.length));
+        console.log(("sending HB data to these clients:" + this.clients.length + " " + Date.now()));
         this.clients = this.clients.filter((item) => item)
 
         this.clients.forEach((ws, index) => {
+
+            const enc = new TextDecoder("utf-8");
+            const remoteAdress = enc.decode(ws.getRemoteAddressAsText())
+
+            console.log("🚀 ~ WebsocketServer ~ this.clients.forEach ~ ws:", remoteAdress)
             try {
                 if (ws.lasthbTime < (Date.now() - 60)) {
                     delete this.clients[index]

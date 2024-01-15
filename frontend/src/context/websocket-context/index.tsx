@@ -1,4 +1,5 @@
 import { ReactNode, createContext, useEffect, useState } from "react";
+import { showSwal } from "../../utils/functions";
 
 export type WebsocketContextPropsType = {
   children: ReactNode;
@@ -8,40 +9,47 @@ export type WebsocketValueType = {
 };
 
 const WebsocketContextProvider = createContext<WebsocketValueType>({});
+const websocket = new WebSocket(import.meta.env.VITE_CHAT_API_WEBSOCKET_URL);
 
 export default function WebsocketContext(props: WebsocketContextPropsType) {
-  const [websocket, setWebsocket] = useState<WebSocket>(
-    new WebSocket(import.meta.env.VITE_CHAT_API_WEBSOCKET_URL)
-  );
   const contextValue: WebsocketValueType = {};
 
+  const onWebsocketOpen = (event: Event) => {
+    websocket.send(
+      JSON.stringify({
+        hb: Date.now(),
+      })
+    );
+  };
+
+  const onWebsocketClose = (event: CloseEvent) => {
+    showSwal("error", "Websocket connection lost, please refresh page!");
+  };
+
+  const onWebsocketMessage = (event: MessageEvent<any>) => {
+    console.log("🚀 ~ onWebsocketMessage ~ Message from server:", event.data);
+  };
+
+  const onWebsocketError = (event: Event) => {
+    console.log(
+      "🚀 ~ onWebsocketMessage ~ Remote connection error occured:",
+      event
+    );
+  };
+
   useEffect(() => {
-    // Connection opened
-    websocket.addEventListener("open", (event) => {
-      websocket.send(
-        JSON.stringify({
-          hb: Date.now(),
-        })
-      );
-    });
-
-    // Listen for messages
-    websocket.addEventListener("message", (event) => {
-      console.log("Message from server ", event.data);
-    });
-
-    // Connection closed
-    websocket.addEventListener("close", (event) => {
-      console.log("Connection closed");
-    });
-
-    // Connection error
-    websocket.addEventListener("error", (event) => {
-      console.log("Connection error occured", event);
-    });
+    websocket.addEventListener("open", onWebsocketOpen);
+    websocket.addEventListener("close", onWebsocketClose);
+    websocket.addEventListener("message", onWebsocketMessage);
+    websocket.addEventListener("error", onWebsocketError);
 
     return () => {
-      websocket.close();
+      console.log(">> websocket context unmount executed. ");
+
+      websocket.removeEventListener("open", onWebsocketOpen);
+      websocket.removeEventListener("close", onWebsocketClose);
+      websocket.removeEventListener("message", onWebsocketMessage);
+      websocket.removeEventListener("error", onWebsocketError);
     };
   }, []);
 
