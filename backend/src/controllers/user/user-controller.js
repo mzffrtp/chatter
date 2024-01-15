@@ -4,7 +4,7 @@ import bcrypt from "bcrypt";
 
 
 export default class UserController extends BaseController {
-    routes = {
+    httpRoutes = {
         "/user/me": (req, res) => this.me(req, res),
         "/user/logout": (req, res) => this.logout(req, res)
     };

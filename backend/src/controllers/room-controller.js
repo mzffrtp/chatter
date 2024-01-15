@@ -4,7 +4,7 @@ import BaseController from "./base-controller.js";
 
 export default class RoomController extends BaseController {
 
-    routes = {
+    httpRoutes = {
         "/room/joinRoom": this.joinRoom.bind(this),
         "/room/createRoom": this.createRoom.bind(this),
         "/room/sendMessage": this.sendMessage.bind(this),

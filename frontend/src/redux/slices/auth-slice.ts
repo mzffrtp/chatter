@@ -40,16 +40,14 @@ export interface AuthStateType {
 }
 
 export const loginAction = createAsyncThunk(
-  "auth/login",
+  "auth.login",
   async (data: AuthLoginDataType, thunkAPI) => {
-    try {
-      const api = chatHttpApi();
-      const response = await api.post("/auth/login", data);
-      return response.data;
-    } catch (error) {
-      console.error("Error during login:", error);
-      throw error;
-    }
+    const api = chatHttpApi();
+    const response = await api.post("/auth/login", data);
+    console.log("🚀 login action ~ data:-->", data);
+
+    return response.data;
+    console.log("here");
   }
 );
 
@@ -68,7 +66,7 @@ export const logoutAction = createAsyncThunk(
 );
 
 export const getUserMeInfoAction = createAsyncThunk(
-  "user/me",
+  "user.me",
   async (thunkAPI) => {
     try {
       const api = chatHttpApi();
@@ -112,17 +110,23 @@ export const authSlice = createSlice({
       state.errorMessage = null;
     });
     builder.addCase(loginAction.fulfilled, (state, action) => {
+      console.log("🚀 ~ builder.addCase ~ action:", action.payload);
+
       if (action.payload.status === "error") {
         state.errorMessage = action.payload.errorMessage;
         state.requestStatus = "fulfilled";
         return;
       }
-      localStorage.setItem("token", action.payload.data.data);
-      state.token = action.payload.data.data;
+
+      const receivedToken = action.payload.data.token;
+      localStorage.setItem("token", receivedToken);
+
+      state.token = receivedToken;
       state.user = action.payload.data.user;
       state.requestStatus = "fulfilled";
       state.errorMessage = null;
     });
+
     //! register action
     builder.addCase(registerAction.pending, (state, action) => {
       state.token = null;
@@ -169,11 +173,16 @@ export const authSlice = createSlice({
       (state.requestStatus = "rejected"), (state.errorMessage = null);
     });
     builder.addCase(logoutAction.fulfilled, (state, action) => {
-      localStorage.removeItem("token");
-      (state.token = null),
-        (state.user = null),
-        (state.requestStatus = "fulfilled"),
-        (state.errorMessage = null);
+      if (action.payload.status === "success") {
+        state.user = action.payload.data.user;
+      } else {
+        localStorage.removeItem("token");
+        state.token = null;
+        state.user = null;
+        state.errorMessage = action.payload.errorMessage;
+      }
+
+      state.requestStatus = "fulfilled";
     });
   },
 });

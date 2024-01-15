@@ -1,12 +1,12 @@
 import uWS from "uWebSockets.js";
-import { bufferToString } from "../../utils.js";
+import { bufferToString, findAllControllerFiles } from "../../utils.js";
 
 export default class WebsocketServer {
     services = null;
-    server = null;
+    wsServer = null;
 
-    //! WHICH WS WHICH USER?
-    clients = [];
+    wsClients = [];
+    wsRoutes = {};
 
     constructor(services) {
         this.services = services
@@ -14,44 +14,66 @@ export default class WebsocketServer {
     }
 
     async sendData(topic, message) {
-        if (this.server === null) {
+        if (this.wsServer === null) {
             console.log("senddata --> error");
             return false
         }
         message = typeof message === "string" ? message : JSON.stringify(message)
-        this.server.publish(topic, message, false, false)
+        this.wsServer.publish(topic, message, false, false)
         return true
     }
 
     async startHeartBeat() {
-        this.clients = this.clients.filter((item) => item)
+        this.wsClients = this.wsClients.filter((item) => item)
 
-        console.log(("sending HB data to these clients:" + this.clients.length + " " + Date.now()));
+        console.log(("sending HB data to these clients:" + this.wsClients.length + " " + Date.now()));
 
 
-        this.clients.forEach((ws, index) => {
-
+        this.wsClients.forEach((ws, index) => {
             try {
+                console.log("WS client processing-->", ws.getUserData());
+
                 console.log("🚀 ~ WebsocketServer ~ ws client remote adress", bufferToString(ws.getRemoteAddressAsText()))
 
                 if (ws.lasthbTime < (Date.now() - 60)) {
-                    delete this.clients[index]
+                    delete this.wsClients[index]
                 } else {
                     ws.send(JSON.stringify({ hb: Date.now() }))
                 }
             } catch (e) {
-                delete this.clients[index]
+                delete this.wsClients[index]
             }
         })
-        setTimeout(() => this.startHeartBeat(), 5_000)
+        setTimeout(() => this.startHeartBeat(), 10_000)
+    }
+
+    async configureWebsocketRoutes() {
+        const controllerFiles = findAllControllerFiles();
+
+        for (let i = 0; i < controllerFiles.length; i++) {
+            const controllerFile = controllerFiles[i];
+            const controllerClass = await import(controllerFile)
+
+
+            try {
+                const obj = new controllerClass.default(this.services);
+                await obj.registerWebsocketRoutes(this.wsRoutes);
+
+            } catch (e) {
+                //console.log("this file excluding:", controllerFile);
+            }
+        }
+        console.log("All websocket routes: ", this.wsRoutes);
     }
     async start() {
         console.log("Websocket server startting");
 
-        this.server = uWS.App()
+        this.wsServer = uWS.App()
+        await this.configureWebsocketRoutes();
+
         this.startHeartBeat();
 
-        this.server
+        this.wsServer
             .ws("/*", {
                 compression: uWS.SHARED_COMPRESSOR,
                 maxPayloadLength: 16 * 1024 * 1024,
@@ -68,7 +90,7 @@ export default class WebsocketServer {
                             })
                         );
 
-                        this.clients.push(ws)
+                        this.wsClients.push(ws)
                     } catch (e) {
                         console.log("🚀 ~ WebsocketServer ~ start ~ e:", e)
                     }
@@ -82,17 +104,22 @@ export default class WebsocketServer {
                     //!message from fontend websocket
                     let messageStr = bufferToString(message, "utf-8");
                     let messageObj = JSON.parse(messageStr)
-                    console.log("🚀 ~ WebsocketServer ~ start ~ messageObj:", messageObj)
 
-                    if (message.command === "auth_login") {
+                    const foundMethod = this.wsRoutes[messageObj.command]
+                    console.log("🚀 ~ WebsocketServer ~ start ~ foundMethod:", foundMethod)
+
+                    if (messageObj.command === "auth_login") {
                         const websocketFoundUserId = this.services.cache.getSync(
                             "auth_" + messageObj.token
                         )
 
+                        {/*
+                    
                         //!
                         console.log("🚀 ~ WebsocketServer ~ start ~ websocketFoundUserId:", websocketFoundUserId)
                         console.log(">>messageObj.token-->", messageObj.token);
                         //!
+                        */}
 
                         if (websocketFoundUserId) {
                             ws.getUserData().userId = websocketFoundUserId;

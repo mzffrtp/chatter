@@ -1,7 +1,8 @@
 
 export default class BaseController {
     services = null
-    routes = {};
+    httpRoutes = {};
+    websocketRoutes = {};
 
     constructor(services) {
         this.services = services
@@ -21,16 +22,29 @@ export default class BaseController {
         })
     };
 
-    registerRoutes(httpServer) {
-        const keys = Object.keys(this.routes)
+    registerHttpRoutes(httpServer) {
+        const keys = Object.keys(this.httpRoutes)
         //console.log("keys", keys);
 
         for (let i = 0; i < keys.length; i++) {
             const key = keys[i]
 
-            console.log("Endpoints-->" + key);
-            const method = this.routes[key]
+            console.log(">> Http Endpoints-->" + key);
+            const method = this.httpRoutes[key]
             httpServer.use(key, (req, res) => method(req, res))
+        }
+    }
+
+    registerWebsocketRoutes(routesObj) {
+        const keys = Object.keys(this.websocketRoutes)
+        //console.log("keys", keys);
+
+        for (let i = 0; i < keys.length; i++) {
+            const key = keys[i]
+            console.log(">> Ws Endpoints-->" + key);
+            const method = this.websocketRoutes[key]
+            routesObj[key] = method
+
         }
     }
 }

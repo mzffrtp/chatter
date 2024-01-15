@@ -14,6 +14,8 @@ export default function LoginPage() {
   const authState = useSelector<RootState, AuthStateType>(
     (state) => state.authState
   );
+  console.log("🚀 ~ LoginPage ~ authState:", authState);
+
   const [showPassword, setShowPassword] = useState(false);
 
   const togglePasswordVisibility = () => {
@@ -88,7 +90,13 @@ export default function LoginPage() {
               <input type="checkbox" value="remember-me" /> Remember me
             </label>
           </div>
-          <button className="w-100 btn btn-lg btn-primary" type="submit">
+          <button
+            onClick={() => {
+              console.log("authState-->", authState);
+            }}
+            className="w-100 btn btn-lg btn-primary"
+            type="submit"
+          >
             <i className="fa-regular fa-paper-plane me-3" />
             Sign in
           </button>

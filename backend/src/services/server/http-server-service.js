@@ -1,6 +1,7 @@
 import express from "express";
 import fs from "fs";
 import cors from "cors";
+import { findAllControllerFiles } from "../../utils.js";
 
 export default class HttpServer {
     httpServer = null
@@ -41,7 +42,7 @@ export default class HttpServer {
             return;
         }
         const foundUserId = this.services.cache.getSync("auth_" + token);
-        console.log("foundUserId-->", foundUserId);
+        console.log("🚀 ~ HttpServer ~ checkAuth ~ foundUserId:", foundUserId)
 
         if (!foundUserId) {
             res.json({
@@ -55,29 +56,9 @@ export default class HttpServer {
         next();
     };
 
-    findAllControllerFiles() {
-        const controllerFiles = [];
-        const controllerFolder = process.cwd() + "/src/controllers"
-
-        function findControllerFiles(currentDirectory) {
-            fs.readdirSync(currentDirectory, { withFileTypes: true }).forEach(
-                (currentFile) => {
-
-                    if (currentFile.isDirectory()) {
-                        findControllerFiles(currentDirectory + "/" + currentFile.name)
-                        return;
-                    }
-
-                    controllerFiles.push(currentDirectory + "/" + currentFile.name);
-                });
-        }
-        findControllerFiles(controllerFolder)
-        return controllerFiles
-    };
-
     async configureHttpServer() {
 
-        const controllerFiles = this.findAllControllerFiles();
+        const controllerFiles = findAllControllerFiles();
         //console.log("controllers-->", controllerFiles);
 
         for (let i = 0; i < controllerFiles.length; i++) {
@@ -91,7 +72,7 @@ export default class HttpServer {
 
             try {
                 const obj = new controllerClass.default(this.services);
-                await obj.registerRoutes(this.httpServer);
+                await obj.registerHttpRoutes(this.httpServer);
 
             } catch (e) {
                 //console.log("this file excluding:", controllerFile);
