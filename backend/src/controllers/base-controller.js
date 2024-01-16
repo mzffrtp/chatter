@@ -42,9 +42,7 @@ export default class BaseController {
         for (let i = 0; i < keys.length; i++) {
             const key = keys[i]
             console.log(">> Ws Endpoints-->" + key);
-            const method = this.websocketRoutes[key]
-            routesObj[key] = method
-
+            routesObj[key] = this.websocketRoutes[key]
         }
     }
 }

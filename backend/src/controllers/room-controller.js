@@ -13,6 +13,26 @@ export default class RoomController extends BaseController {
         "/public/room/lastRooms": (req, res) => this.lastRooms(req, res),
     };
 
+    websocketRoutes = {
+        "room_send": (req, res) => this.wsRoomSendHandler(req, res),
+        "room_join": (req, res) => this.wsRoomJoinHandler(req, res),
+        "room_exit": (req, res) => this.wsRoomExitHandler(req, res),
+
+
+    }
+    async wsRoomSendHandler(ws, incomingData, wsServer) {
+        // TODO Handle here.
+    };
+
+    async wsRoomJoinHandler(ws, incomingData, wsServer) {
+        // TODO Handle here.
+    };
+
+    async wsRoomExitHandler(ws, incomingData, wsServer) {
+        // TODO Handle here.
+    }
+
+
     deleteRoom(req, res) {
         console.log("RoomController::deleteRoom () function invoked");
 

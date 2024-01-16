@@ -28,10 +28,9 @@ export default class WebsocketServer {
 
         console.log(("sending HB data to these clients:" + this.wsClients.length + " " + Date.now()));
 
-
         this.wsClients.forEach((ws, index) => {
             try {
-                console.log("WS client processing-->", ws.getUserData());
+                console.log(">> WS client processing-->", ws.getUserData());
 
                 console.log("🚀 ~ WebsocketServer ~ ws client remote adress", bufferToString(ws.getRemoteAddressAsText()))
 
@@ -53,7 +52,6 @@ export default class WebsocketServer {
         for (let i = 0; i < controllerFiles.length; i++) {
             const controllerFile = controllerFiles[i];
             const controllerClass = await import(controllerFile)
-
 
             try {
                 const obj = new controllerClass.default(this.services);
@@ -89,6 +87,8 @@ export default class WebsocketServer {
                                 data: "default odasina baglandiniz"
                             })
                         );
+                        //todo 
+                        // ws.setUserData({ someKey: 'someValue' });
 
                         this.wsClients.push(ws)
                     } catch (e) {
@@ -104,47 +104,30 @@ export default class WebsocketServer {
                     //!message from fontend websocket
                     let messageStr = bufferToString(message, "utf-8");
                     let messageObj = JSON.parse(messageStr)
+                    console.log(">> 🚀 messageObj:", messageObj);
 
-                    const foundMethod = this.wsRoutes[messageObj.command]
-                    console.log("🚀 ~ WebsocketServer ~ start ~ foundMethod:", foundMethod)
 
-                    if (messageObj.command === "auth_login") {
-                        const websocketFoundUserId = this.services.cache.getSync(
-                            "auth_" + messageObj.token
-                        )
+                    const wsRouteList = Object.keys(this.wsRoutes);
+                    const wsRouteMethods = Object.values(this.wsRoutes)
 
-                        {/*
-                    
-                        //!
-                        console.log("🚀 ~ WebsocketServer ~ start ~ websocketFoundUserId:", websocketFoundUserId)
-                        console.log(">>messageObj.token-->", messageObj.token);
-                        //!
-                        */}
+                    let commandFound = false;
 
-                        if (websocketFoundUserId) {
-                            ws.getUserData().userId = websocketFoundUserId;
+                    wsRouteList.forEach((item, index) => {
+                        if (item === messageObj.command) {
+                            commandFound = true;
 
-                            ws.send(JSON.stringify({
-                                status: "success",
-                                data: "Successfully loged in!"
-                            }))
-                        } else {
-
-                            ws.send(
-                                JSON.stringify({
-                                    status: "error",
-                                    data: "Invalid token, connection lost!!"
-                                }));
-
-                            setTimeout(() => {
-                                ws.close();
-                            }, 2_000);
-
+                            wsRouteMethods[index](ws, messageObj, this.wsServer)
                         }
+                    })
+                    if (!commandFound) {
+                        ws.send(
+                            JSON.stringify({
+                                status: "error",
+                                errorMessage: "Wrong ws command send from wscontext in frontend!"
+                            })
+                        )
                     }
-                    else if (message.command === "auth_logout") { }
-                    else if (message.command === "room_send") { }
-                    else if (message.command === "room_join") { }
+
 
 
                     {/*

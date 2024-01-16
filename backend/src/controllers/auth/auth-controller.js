@@ -10,12 +10,38 @@ export default class AuthController extends BaseController {
     };
 
     websocketRoutes = {
-        "auth/login": this.wsLoginHandler.bind(this)
+        "auth_login": (req, res) => this.wsLoginHandler(req, res),
     }
 
-    async wsLoginHandler(ws, data, wsServer) {
-        console.log("wsloginhandler", arguments);
-    }
+    async wsLoginHandler(ws, incomingWsData, wsServer) {
+        console.log(">>>> wsloginhandler invoked", arguments);
+
+        const websocketFoundUserId = this.services.cache.getSync(
+            "auth_" + incomingWsData.token
+        )
+        console.log("🚀 ~ AuthController ~ wsLoginHandler ~ websocketFoundUserId:", websocketFoundUserId)
+
+        if (websocketFoundUserId) {
+            ws.getUserData().userId = websocketFoundUserId;
+
+            ws.send(JSON.stringify({
+                status: "success",
+                data: "Successfully loged in!",
+                loginDate: Date.now()
+            }));
+        } else {
+
+            ws.send(
+                JSON.stringify({
+                    status: "error",
+                    data: "Invalid token, connection being closed!"
+                }));
+
+            setTimeout(() => {
+                ws.close();
+            }, 2_000);
+        }
+    };
 
     async login(req, res) {
         console.log(">>> Auth controller::login() function invoked.");

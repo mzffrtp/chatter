@@ -16,15 +16,19 @@ const websocket = new WebSocket(import.meta.env.VITE_CHAT_API_WEBSOCKET_URL);
 export default function WebsocketContext(props: WebsocketContextPropsType) {
   const contextValue: WebsocketValueType = {};
   const authState = useSelector((state: RootState) => state.authState);
+  const [isloogedIn, setIsLogedIn] = useState<boolean>(false);
 
-  if (authState.user) {
-    websocket.send(
-      JSON.stringify({
-        command: "auth_login",
-        token: authState.token,
-      })
-    );
-  }
+  useEffect(() => {
+    if (!isloogedIn && websocket.readyState === WebSocket.OPEN) {
+      websocket.send(
+        JSON.stringify({
+          command: "auth_login",
+          token: authState.token,
+        })
+      );
+      setIsLogedIn(true);
+    }
+  }, [authState.user]);
 
   const onWebsocketOpen = (event: Event) => {
     console.log(">> 🚀 event:", event);
