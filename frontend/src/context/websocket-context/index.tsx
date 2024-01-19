@@ -18,7 +18,11 @@ export default function WebsocketContext(props: WebsocketContextPropsType) {
   const authState = useSelector((state: RootState) => state.authState);
   const [isloogedIn, setIsLogedIn] = useState<boolean>(false);
 
-  useEffect(() => {
+  {
+    /*
+
+ //TODO fix here
+ useEffect(() => {
     if (!isloogedIn && websocket.readyState === WebSocket.OPEN) {
       websocket.send(
         JSON.stringify({
@@ -30,6 +34,17 @@ export default function WebsocketContext(props: WebsocketContextPropsType) {
     }
   }, [authState.user]);
 
+*/
+  }
+
+  if (authState.user) {
+    websocket.send(
+      JSON.stringify({
+        command: "auth_login",
+        token: authState.token,
+      })
+    );
+  }
   const onWebsocketOpen = (event: Event) => {
     console.log(">> 🚀 event:", event);
     console.log(">> websocket open event triggered.");
@@ -41,7 +56,10 @@ export default function WebsocketContext(props: WebsocketContextPropsType) {
   };
 
   const onWebsocketClose = (event: CloseEvent) => {
-    showSwal("error", "Websocket connection lost, please refresh page!");
+    showSwal("error", "Websocket connection lost, page is loading!");
+    setTimeout(() => {
+      document.location.reload();
+    }, 1_000);
   };
 
   const onWebsocketMessage = (event: MessageEvent<any>) => {

@@ -7,6 +7,7 @@ export default class RoomController extends BaseController {
     httpRoutes = {
         "/room/joinRoom": this.joinRoom.bind(this),
         "/room/createRoom": this.createRoom.bind(this),
+        "/room/:id": (req, res) => this.getRoom(req, res),
         "/room/sendMessage": this.sendMessage.bind(this),
         "/room/deleteRoom": this.deleteRoom.bind(this),
         "/room/listRoom": this.listRoom.bind(this),
@@ -32,9 +33,25 @@ export default class RoomController extends BaseController {
         // TODO Handle here.
     }
 
+    async getRoom(req, res) {
+        console.log("RoomController::getRoom () function invoked");
 
-    deleteRoom(req, res) {
+        let fetchedRoom = await Room.findById(req.params.id)
+        fetchedRoom = fetchedRoom.toJSON();
+
+        fetchedRoom.peers = this.services.websocketService.getRoomOnlinePeers(req.params.id)
+
+        this.showSuccess(res, {
+            fetchedRoom
+        })
+
+
+    };
+
+    async deleteRoom(req, res) {
+        //! NEVER DELETE ROOMS
         console.log("RoomController::deleteRoom () function invoked");
+
 
         this.showSuccess(res, {
             status: "Room deleted succesfully",
@@ -86,6 +103,10 @@ export default class RoomController extends BaseController {
                 lastRooms
             });
         } catch (e) {
+            this.showError(res, {
+                status: "error",
+                e
+            })
             console.log("error lastroom-->", e);
         }
     };

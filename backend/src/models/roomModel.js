@@ -20,13 +20,7 @@ const roomSchema = new mongoose.Schema({
         type: Number,
         default: 0
     },
-    peers: {
-        type: [Schema.ObjectId],
-        ref: "User",
-        default: []
 
-    }
-
-})
+}, { timestamps: true })
 
 export const Room = mongoose.model("Room", roomSchema)

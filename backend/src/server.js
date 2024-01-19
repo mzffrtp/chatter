@@ -25,7 +25,7 @@ export const bufferToString = (buffer, encoding = "ascii") => {
                 basePath: "./.cache", // (optional) Path where cache files are stored (default).
                 ns: "aaa",   // (optional) A grouping namespace for items.
                 hash: "sha1",         // (optional) A hashing algorithm used within the cache key.
-                ttl: 60 * 60 * 5              // (optional) A time-to-live (in secs) on how long an item remains cached.
+                ttl: 60             // (optional) A time-to-live (in secs) on how long an item remains cached.
             })
         };
 

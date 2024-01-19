@@ -19,9 +19,9 @@ const messageSchema = new mongoose.Schema({
     text: {
         type: String
     },
-    media_url: {
+    mediaUrl: {
         type: String
     }
-})
+}, { timestamps: true })
 
 export default mongoose.model("Message", messageSchema)

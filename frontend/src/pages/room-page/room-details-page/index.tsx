@@ -2,6 +2,9 @@ import { Form, Button, InputGroup, ListGroup } from "react-bootstrap";
 
 import { formJson } from "../../../utils/functions";
 import TextMessage from "./components/text-message";
+import { useParams } from "react-router-dom";
+import { useEffect } from "react";
+import { chatHttpApi } from "../../../utils/api";
 
 export default function RoomDetailsPage() {
   const onChatFormSubmit = (e: React.FormEvent<HTMLFormElement>) => {
@@ -10,6 +13,26 @@ export default function RoomDetailsPage() {
     console.log("🚀 ~ onChatFormSubmit ~ formData:", formData);
     alert("meesage sent");
   };
+
+  const params = useParams();
+  console.log("🚀 ~ RoomDetailsPage ~ params:", params);
+
+  useEffect(() => {
+    (async () => {
+      try {
+        //! get room details
+        const api = chatHttpApi();
+        const getRoomResponse = await api.get("/room/" + params.roomId);
+        console.log("🚀 ~ getRoomResponse:", getRoomResponse);
+
+        //! get room messages
+        //! room subscribe
+      } catch (error) {
+        console.error("Error in useEffect:", error);
+      }
+    })();
+  }, [params.roomId]);
+
   return (
     <section className="py-3 container" style={{ backgroundColor: "#F5F5F5" }}>
       <div className="row container m-1">

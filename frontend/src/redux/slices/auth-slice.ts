@@ -52,16 +52,12 @@ export const loginAction = createAsyncThunk(
 );
 
 export const logoutAction = createAsyncThunk(
-  "user.logout",
+  "auth.logout",
   async (data: undefined, thunkAPI) => {
-    try {
-      const api = chatHttpApi();
-      const response = await api.post("/user/logout", data);
-      return response.data;
-    } catch (error) {
-      console.error("Error during login:", error);
-      throw error;
-    }
+    const api = chatHttpApi();
+    const response = await api.post("/user/logout", data);
+
+    return response.data;
   }
 );
 
@@ -173,16 +169,11 @@ export const authSlice = createSlice({
       (state.requestStatus = "rejected"), (state.errorMessage = null);
     });
     builder.addCase(logoutAction.fulfilled, (state, action) => {
-      if (action.payload.status === "success") {
-        state.user = action.payload.data.user;
-      } else {
-        localStorage.removeItem("token");
-        state.token = null;
-        state.user = null;
-        state.errorMessage = action.payload.errorMessage;
-      }
-
+      localStorage.removeItem("token");
+      state.token = null;
+      state.user = null;
       state.requestStatus = "fulfilled";
+      state.errorMessage = null;
     });
   },
 });

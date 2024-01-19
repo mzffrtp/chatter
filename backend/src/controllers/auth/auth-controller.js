@@ -14,12 +14,12 @@ export default class AuthController extends BaseController {
     }
 
     async wsLoginHandler(ws, incomingWsData, wsServer) {
-        console.log(">>>> wsloginhandler invoked", arguments);
+        //console.log(">>>> wsloginhandler invoked", arguments);
 
         const websocketFoundUserId = this.services.cache.getSync(
             "auth_" + incomingWsData.token
         )
-        console.log("🚀 ~ AuthController ~ wsLoginHandler ~ websocketFoundUserId:", websocketFoundUserId)
+        // console.log("🚀 ~ AuthController ~ wsLoginHandler ~ websocketFoundUserId:", websocketFoundUserId)
 
         if (websocketFoundUserId) {
             ws.getUserData().userId = websocketFoundUserId;
@@ -38,8 +38,14 @@ export default class AuthController extends BaseController {
                 }));
 
             setTimeout(() => {
-                ws.close();
-            }, 2_000);
+                try {
+                    if (ws.readyState === ws.OPEN) {
+                        ws.close();
+                    }
+                } catch (error) {
+                    console.error("Error closing WebSocket:", error);
+                }
+            }, 20_000);
         }
     };
 

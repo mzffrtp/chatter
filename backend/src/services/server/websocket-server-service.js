@@ -6,13 +6,18 @@ export default class WebsocketServer {
     wsServer = null;
 
     wsClients = [];
+    //TODO which client in which room
+    wsRoomSubscripter = []
     wsRoutes = {};
 
     constructor(services) {
         this.services = services
         console.log("Websocket server instance created");
     }
-
+    async getRoomOnlinePeers(roomId) {
+        //TODO FIX HERE
+        return []
+    }
     async sendData(topic, message) {
         if (this.wsServer === null) {
             console.log("senddata --> error");
@@ -26,13 +31,13 @@ export default class WebsocketServer {
     async startHeartBeat() {
         this.wsClients = this.wsClients.filter((item) => item)
 
-        console.log(("sending HB data to these clients:" + this.wsClients.length + " " + Date.now()));
+        //console.log(("sending HB data to these clients:" + this.wsClients.length + " " + Date.now()));
 
         this.wsClients.forEach((ws, index) => {
             try {
-                console.log(">> WS client processing-->", ws.getUserData());
+                //console.log(">> WS client processing-->", ws.getUserData());
 
-                console.log("🚀 ~ WebsocketServer ~ ws client remote adress", bufferToString(ws.getRemoteAddressAsText()))
+                // console.log("🚀 ~ WebsocketServer ~ ws client remote adress", bufferToString(ws.getRemoteAddressAsText()))
 
                 if (ws.lasthbTime < (Date.now() - 60)) {
                     delete this.wsClients[index]
@@ -96,10 +101,10 @@ export default class WebsocketServer {
                     }
                 },
                 message: (ws, message, isBinary) => {
-                    console.log(
-                        "WS message received, IP: " +
-                        bufferToString(ws.getRemoteAddressAsText()),
-                        bufferToString(message, "utf-8"));
+                    // console.log(
+                    //    "WS message received, IP: " +
+                    //    bufferToString(ws.getRemoteAddressAsText()),
+                    //   bufferToString(message, "utf-8"));
 
                     //!message from fontend websocket
                     let messageStr = bufferToString(message, "utf-8");

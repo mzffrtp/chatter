@@ -9,6 +9,7 @@ import { useSelector } from "react-redux";
 import "./components/style.css";
 import { useNavigate } from "react-router-dom";
 import { Alert } from "react-bootstrap";
+import { formJson } from "../../../utils/functions";
 
 export default function LoginPage() {
   const authState = useSelector<RootState, AuthStateType>(
@@ -31,8 +32,9 @@ export default function LoginPage() {
   function onFormSubmit(e: FormEvent<HTMLFormElement>) {
     e.preventDefault();
 
-    const data = new FormData(e.currentTarget);
-    const value = Object.fromEntries(data.entries());
+    //const data = new FormData(e.currentTarget);
+    //const value = Object.fromEntries(data.entries());
+    const value = formJson(e.currentTarget);
     appDispatch(loginAction(value as AuthLoginDataType));
   }
   return (

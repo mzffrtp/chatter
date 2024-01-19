@@ -62,11 +62,14 @@ export default function Header() {
                       List Rooms
                     </Link>
                   </Dropdown.Item>
-                  <Dropdown.Item eventKey="2">
-                    <Link to="/room/createRoom" className="dropdown-item">
-                      Create Room
-                    </Link>
-                  </Dropdown.Item>
+
+                  {authState.user ? (
+                    <Dropdown.Item eventKey="2">
+                      <Link to="/room/createRoom" className="dropdown-item">
+                        Create Room
+                      </Link>
+                    </Dropdown.Item>
+                  ) : null}
                 </SplitButton>
               </div>
               {authState.user ? (
@@ -77,7 +80,7 @@ export default function Header() {
                   <Button
                     variant="outline-danger mx-3"
                     onClick={(e) => {
-                      if (confirm("Wamt to logout?")) {
+                      if (confirm("Want to logout?")) {
                         appDispatch(logoutAction());
                       }
                     }}
