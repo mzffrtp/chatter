@@ -7,10 +7,11 @@ export default class RoomController extends BaseController {
     httpRoutes = {
         "/room/joinRoom": this.joinRoom.bind(this),
         "/room/createRoom": this.createRoom.bind(this),
-        "/room/:id": (req, res) => this.getRoom(req, res),
+        "/room/getMessages": (req, res) => this.getMessages(req, res),
         "/room/sendMessage": this.sendMessage.bind(this),
         "/room/deleteRoom": this.deleteRoom.bind(this),
         "/room/listRoom": this.listRoom.bind(this),
+        "/room/getById/:id": (req, res) => this.getRoom(req, res),
         "/public/room/lastRooms": (req, res) => this.lastRooms(req, res),
     };
 
@@ -118,7 +119,16 @@ export default class RoomController extends BaseController {
 
         });
     };
+    async getMessages(req, res) {
+        console.log(">> RoomController::getMessages() function invoked.");
 
+        this.showSuccess(res, {
+            status: "message get successfully",
+
+        });
+
+        //todo messages per user descending
+    }
     sendMessage(req, res) {
         console.log(">> RoomController::sendMessage() function invoked.");
         console.log("incoming form data, message --->", req.body);

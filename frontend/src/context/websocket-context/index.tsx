@@ -6,15 +6,27 @@ import { RootState } from "../../redux/store";
 export type WebsocketContextPropsType = {
   children: ReactNode;
 };
-export type WebsocketValueType = {
-  //
-};
+export type WebsocketValueType =
+  | {
+      subscribeRoom: (roomId: string) => void;
+      unsubscribeRoom: (roomId: string) => void;
+    }
+  | undefined;
 
-const WebsocketContextProvider = createContext<WebsocketValueType>({});
+const WebsocketContextProvider = createContext<WebsocketValueType>(undefined);
 const websocket = new WebSocket(import.meta.env.VITE_CHAT_API_WEBSOCKET_URL);
 
 export default function WebsocketContext(props: WebsocketContextPropsType) {
-  const contextValue: WebsocketValueType = {};
+  const contextValue: WebsocketValueType = {
+    subscribeRoom: (roomId: string) => {
+      if (isloogedIn) {
+      }
+    },
+    unsubscribeRoom: (roomId: string) => {
+      if (isloogedIn) {
+      }
+    },
+  };
   const authState = useSelector((state: RootState) => state.authState);
   const [isloogedIn, setIsLogedIn] = useState<boolean>(false);
 

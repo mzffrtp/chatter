@@ -24,6 +24,7 @@
     "morgan": "^1.10.0",
     "nodemon": "^3.0.2",
     "punycode": "^2.3.1",
+    "stack-trace": "^1.0.0-pre2",
     "uWebSockets.js": "github:uNetworking/uWebSockets.js#v20.33.0"
   }
 }

@@ -22,10 +22,15 @@ export default function RoomDetailsPage() {
       try {
         //! get room details
         const api = chatHttpApi();
-        const getRoomResponse = await api.get("/room/" + params.roomId);
-        console.log("🚀 ~ getRoomResponse:", getRoomResponse);
+        const roomDetailsResponse = await api.get(
+          "/room/getById/" + params.roomId
+        );
+        console.log("🚀 ~ getRoomResponse:", roomDetailsResponse);
 
         //! get room messages
+        const lastMessagesResponse = await api.get("/room/getMessages");
+        console.log("🚀 ~ lastMessagesResponse:", lastMessagesResponse);
+
         //! room subscribe
       } catch (error) {
         console.error("Error in useEffect:", error);

@@ -22,7 +22,23 @@ export default class HttpServer {
         this.httpServer.use(cors(corsOptions))
 
         this.httpServer.use(this.checkAuth.bind(this))
+
+        //todo
+        // this.httpServer.user(this.errorHandler.bind(this));
     };
+
+    errorHandler(err, req, res, next) {
+        try {
+            next()
+        } catch (e) {
+            console.log("exception captured in middleware", e.message)
+
+            res.json({
+                status: "error",
+                errorMessage: e.message
+            })
+        }
+    }
 
     checkAuth(req, res, next) {
         if (

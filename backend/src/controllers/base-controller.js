@@ -1,3 +1,4 @@
+import { parse } from "stack-trace"
 
 export default class BaseController {
     services = null
@@ -31,7 +32,22 @@ export default class BaseController {
 
             console.log(">> Http Endpoints-->" + key);
             const method = this.httpRoutes[key]
-            httpServer.use(key, (req, res) => method(req, res))
+            httpServer.use(key, async (req, res) => {
+                try {
+                    await method(req, res)
+                } catch (e) {
+                    const parsedError = parse(e);
+
+                    console.log("Error during registering routes",
+                        e.message,
+                        `${parsedError[0].getFileName()}:${parsedError[0].getLineNumber()}`);
+
+                    res.json({
+                        status: "error",
+                        errorMessage: e.message
+                    })
+                }
+            })
         }
     }
 
